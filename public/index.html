@@ -130,8 +130,9 @@
             <input id="questionId" type="hidden" />
             <div class="grid-2">
               <div class="field">
-                <label for="categoryInput">Category</label>
-                <input id="categoryInput" class="input" required />
+                <label for="categorySelect">Category</label>
+                <select id="categorySelect" class="select"></select>
+                <input id="categoryInput" class="input hidden" placeholder="Enter new category" />
               </div>
               <div class="field">
                 <label for="questionInput">Question</label>
@@ -178,6 +179,7 @@
       emptyState: document.getElementById('emptyState'),
       formTitle: document.getElementById('formTitle'),
       questionId: document.getElementById('questionId'),
+      categorySelect: document.getElementById('categorySelect'),
       categoryInput: document.getElementById('categoryInput'),
       questionInput: document.getElementById('questionInput'),
       answers: document.getElementById('answers'),
@@ -228,7 +230,7 @@
     function getFormData() {
       return {
         id: el.questionId.value || undefined,
-        category: el.categoryInput.value.trim(),
+        category: (el.categorySelect.value === '__custom__' ? el.categoryInput.value : el.categorySelect.value).trim(),
         question: el.questionInput.value.trim(),
         answers: [...document.querySelectorAll('.answer-input')].map((input) => input.value.trim()).filter(Boolean)
       };
@@ -240,7 +242,7 @@
       el.form.classList.remove('hidden');
       el.emptyState.classList.add('hidden');
       el.questionId.value = item?.id || '';
-      el.categoryInput.value = item?.category || '';
+      syncCategoryEditor(item?.category || '', mode);
       el.questionInput.value = item?.question || '';
       renderAnswers(item?.answers?.length ? item.answers : ['']);
       el.formTitle.textContent = mode === 'create' ? 'Add a new question' : 'Edit question';
@@ -279,9 +281,47 @@
       });
     }
 
+    function syncCategoryEditor(currentCategory = '', mode = state.mode) {
+      const categories = [...new Set(state.all.map((item) => item.category).filter(Boolean))].sort();
+      const hasCurrent = currentCategory && categories.includes(currentCategory);
+      const options = ['<option value="">Select category</option>']
+        .concat(categories.map((category) => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`))
+        .concat(['<option value="__custom__">+ New category</option>']);
+      el.categorySelect.innerHTML = options.join('');
+
+      if (mode === 'create') {
+        if (hasCurrent) {
+          el.categorySelect.value = currentCategory;
+          el.categoryInput.classList.add('hidden');
+          el.categoryInput.value = '';
+        } else if (currentCategory) {
+          el.categorySelect.value = '__custom__';
+          el.categoryInput.classList.remove('hidden');
+          el.categoryInput.value = currentCategory;
+        } else {
+          el.categorySelect.value = '';
+          el.categoryInput.classList.add('hidden');
+          el.categoryInput.value = '';
+        }
+      } else {
+        if (hasCurrent) {
+          el.categorySelect.value = currentCategory;
+        } else if (currentCategory) {
+          const extra = document.createElement('option');
+          extra.value = currentCategory;
+          extra.textContent = currentCategory;
+          el.categorySelect.insertBefore(extra, el.categorySelect.lastElementChild);
+          el.categorySelect.value = currentCategory;
+        }
+        el.categoryInput.classList.add('hidden');
+        el.categoryInput.value = currentCategory;
+      }
+    }
+
     function renderFilters() {
       const categories = [...new Set(state.all.map((item) => item.category).filter(Boolean))].sort();
       el.categoryFilter.innerHTML = '<option value="">All categories</option>' + categories.map((category) => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`).join('');
+      syncCategoryEditor(state.mode === 'edit' ? (state.all.find((item) => item.id === state.selectedId)?.category || '') : '', state.mode);
       el.entryCount.textContent = state.all.length;
       el.categoryCount.textContent = categories.length;
     }
@@ -351,6 +391,12 @@
     el.form.addEventListener('submit', saveQuestion);
     el.searchInput.addEventListener('input', renderList);
     el.categoryFilter.addEventListener('change', renderList);
+    el.categorySelect.addEventListener('change', () => {
+      const isCustom = el.categorySelect.value === '__custom__';
+      el.categoryInput.classList.toggle('hidden', !isCustom);
+      if (!isCustom) el.categoryInput.value = '';
+      if (isCustom) el.categoryInput.focus();
+    });
     el.newButton.addEventListener('click', () => fillForm({ category: '', question: '', answers: [''] }, 'create'));
     el.addAnswerButton.addEventListener('click', () => renderAnswers([...document.querySelectorAll('.answer-input')].map((input) => input.value), ''));
     el.deleteButton.addEventListener('click', deleteQuestion);
