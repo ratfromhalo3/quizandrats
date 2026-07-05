@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
@@ -331,6 +332,27 @@
       renderList();
     }
 
+    function applyGeneratedContent(body) {
+      const current = getSelectedItem();
+      if (state.mode === 'edit' && current) {
+        fillForm({
+          id: current.id,
+          category: body.category,
+          question: body.question,
+          answers: body.answers
+        }, 'edit');
+        setStatus('Generated content applied to the current record. Save will update it.', 'success');
+      } else {
+        fillForm({
+          id: '',
+          category: body.category,
+          question: body.question,
+          answers: body.answers
+        }, 'create');
+        setStatus('Generated content loaded as a new draft.', 'success');
+      }
+    }
+
     function clearForm() {
       state.selectedId = null;
       state.mode = 'edit';
@@ -490,8 +512,7 @@
         setStatus(body.error || 'AI generation failed.', 'error');
         return;
       }
-      fillForm({ id: '', category: body.category, question: body.question, answers: body.answers }, 'create');
-      setStatus('AI question generated. Answer 1 is the correct answer. Review it before saving.', 'success');
+      applyGeneratedContent(body);
     }
 
     async function fetchTrivia() {
@@ -511,8 +532,7 @@
         setStatus(body.error || 'Trivia fetch failed.', 'error');
         return;
       }
-      fillForm({ id: '', category: body.category, question: body.question, answers: body.answers }, 'create');
-      setStatus(`Trivia question loaded from ${body.sourceCategory}. Answer 1 is the correct answer.`, 'success');
+      applyGeneratedContent(body);
     }
 
     async function deleteQuestion() {
