@@ -144,6 +144,7 @@
               <div id="answers" class="answers"></div>
               <div class="toolbar">
                 <button type="button" id="addAnswerButton" class="btn btn-ghost">Add answer</button>
+                <button type="button" id="generateButton" class="btn btn-ghost">Generate with AI</button>
               </div>
             </div>
             <div class="toolbar">
@@ -189,6 +190,7 @@
       deleteButton: document.getElementById('deleteButton'),
       resetButton: document.getElementById('resetButton'),
       duplicateButton: document.getElementById('duplicateButton'),
+      generateButton: document.getElementById('generateButton'),
       themeToggle: document.getElementById('themeToggle'),
       downloadButton: document.getElementById('downloadButton'),
       dataFilePill: document.getElementById('dataFilePill')
@@ -371,6 +373,27 @@
       setStatus('Saved successfully.', 'success');
     }
 
+    async function generateQuestion() {
+      const category = (el.categorySelect.value === '__custom__' ? el.categoryInput.value : el.categorySelect.value).trim();
+      if (!category) {
+        setStatus('Choose or enter a category before generating.', 'error');
+        return;
+      }
+      setStatus('Generating question with AI...');
+      const res = await fetch('/api/questions/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ category })
+      });
+      const body = await res.json();
+      if (!res.ok) {
+        setStatus(body.error || 'AI generation failed.', 'error');
+        return;
+      }
+      fillForm({ category: body.category, question: body.question, answers: body.answers }, state.mode === 'create' ? 'create' : 'edit');
+      setStatus('AI question generated. Review it before saving.', 'success');
+    }
+
     async function deleteQuestion() {
       const id = el.questionId.value;
       if (!id) return;
@@ -400,6 +423,7 @@
     el.newButton.addEventListener('click', () => fillForm({ category: '', question: '', answers: [''] }, 'create'));
     el.addAnswerButton.addEventListener('click', () => renderAnswers([...document.querySelectorAll('.answer-input')].map((input) => input.value), ''));
     el.deleteButton.addEventListener('click', deleteQuestion);
+    el.generateButton.addEventListener('click', generateQuestion);
     el.resetButton.addEventListener('click', () => {
       if (state.mode === 'create') fillForm({ category: '', question: '', answers: [''] }, 'create');
       else {
