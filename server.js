@@ -46,6 +46,16 @@ function decodeHtml(text) {
     .replace(/&gt;/g, '>');
 }
 
+function stripIds(questions) {
+  return questions.map((item) => ({
+    category: String(item.category || '').trim(),
+    question: String(item.question || '').trim(),
+    answers: Array.isArray(item.answers)
+      ? item.answers.map((a) => String(a || '').trim()).filter(Boolean)
+      : []
+  }));
+}
+
 async function fetchTriviaQuestionByCategoryName(name) {
   const resCats = await fetch(`${OPENTDB_BASE}/api_category.php`);
   const catsData = await resCats.json();
@@ -147,7 +157,7 @@ Rules:
   }
 
   const cleaned = content
-    .replace(/^```json\s*/i, '')
+    .replace(/^```json\\s*/i, '')
     .replace(/^```/i, '')
     .replace(/```$/i, '')
     .trim();
@@ -175,13 +185,25 @@ async function readQuestions() {
     throw new Error('questions.json must contain a JSON array');
   }
 
-  // Ensure every record has a stable ID
-  return data.map((item) => ({
-    id: item.id || crypto.randomUUID(),
-    category: item.category || '',
-    question: item.question || '',
-    answers: Array.isArray(item.answers) ? item.answers : []
-  }));
+  let changed = false;
+
+  const normalized = data.map((item) => {
+    const id = item.id || crypto.randomUUID();
+    if (!item.id) changed = true;
+
+    return {
+      id,
+      category: item.category || '',
+      question: item.question || '',
+      answers: Array.isArray(item.answers) ? item.answers : []
+    };
+  });
+
+  if (changed) {
+    await fs.writeFile(DATA_FILE, JSON.stringify(normalized, null, 2), 'utf8');
+  }
+
+  return normalized;
 }
 
 async function writeQuestions(questions) {
@@ -335,8 +357,12 @@ app.post('/api/questions/trivia', async (req, res) => {
 
 app.get('/api/questions/download', async (req, res) => {
   try {
-    await ensureFile();
-    res.download(DATA_FILE, 'questions.json');
+    const questions = await readQuestions();
+    const exportData = stripIds(questions);
+
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename=\"questions.json\"');
+    res.send(JSON.stringify(exportData, null, 2));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
