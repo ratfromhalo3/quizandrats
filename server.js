@@ -11,6 +11,14 @@ let writeQueue = Promise.resolve();
 app.use(express.json({ limit: '2mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+async function ensureFile() {
+  try {
+    await fs.access(DATA_FILE);
+  } catch {
+    await fs.writeFile(DATA_FILE, '[]', 'utf8');
+  }
+}
+
 async function generateWithOpenRouter(category) {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
@@ -19,7 +27,7 @@ async function generateWithOpenRouter(category) {
     throw err;
   }
 
-  const prompt = `Create one multiple-choice quiz item for the category: ${category}. Return valid JSON only with keys question and answers. answers must be an array of exactly 4 short strings. Do not include markdown or explanation.`;
+  const prompt = `Create one multiple-choice quiz item for the category: ${category}. Return valid JSON only with keys question and answers. answers must be an array of exactly 4 short strings, and the first answer must be the correct one. Do not include markdown or explanation.`;
 
   const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
@@ -65,15 +73,6 @@ async function generateWithOpenRouter(category) {
   };
 }
 
-
-async function ensureFile() {
-  try {
-    await fs.access(DATA_FILE);
-  } catch {
-    await fs.writeFile(DATA_FILE, '[]', 'utf8');
-  }
-}
-
 async function readQuestions() {
   await ensureFile();
   const raw = await fs.readFile(DATA_FILE, 'utf8');
@@ -89,7 +88,6 @@ async function readQuestions() {
 
 async function writeQuestions(questions) {
   const normalized = questions.map((item) => ({
-    id: item.id || crypto.randomUUID(),
     category: String(item.category || '').trim(),
     question: String(item.question || '').trim(),
     answers: Array.isArray(item.answers)
@@ -111,7 +109,7 @@ function validateQuestion(body) {
   if (!String(body.category || '').trim()) errors.push('Category is required.');
   if (!String(body.question || '').trim()) errors.push('Question is required.');
   const answers = Array.isArray(body.answers) ? body.answers.map((a) => String(a || '').trim()).filter(Boolean) : [];
-  if (answers.length === 0) errors.push('At least one answer is required.');
+  if (answers.length !== 4) errors.push('Exactly four answers are required.');
   return { errors, answers };
 }
 
@@ -132,7 +130,6 @@ app.post('/api/questions', async (req, res) => {
     const created = await enqueueWrite(async () => {
       const questions = await readQuestions();
       const item = {
-        id: crypto.randomUUID(),
         category: String(req.body.category).trim(),
         question: String(req.body.question).trim(),
         answers
@@ -192,8 +189,6 @@ app.delete('/api/questions/:id', async (req, res) => {
     res.status(error.code || 500).json({ error: error.message });
   }
 });
-
-
 
 app.post('/api/questions/generate', async (req, res) => {
   const category = String(req.body?.category || '').trim();
