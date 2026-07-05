@@ -112,18 +112,7 @@ async function generateWithOpenRouter(category) {
 
   const extraContext = CATEGORY_CONTEXT[category] || '';
 
-  const prompt = `Create one multiple-choice quiz item for the category: ${category}.
-
-Extra category guidance:
-${extraContext || 'No extra guidance.'}
-
-Rules:
-- Return valid JSON only with keys question and answers.
-- answers must be an array of exactly 4 short strings.
-- The first answer must be the correct one.
-- Keep the question concise and suitable for a pub quiz or trivia game.
-- Do not include markdown or explanation.
-- Do not mention these rules in the output.`;
+  const prompt = `Create one multiple-choice quiz item for the category: ${category}.\n\nExtra category guidance:\n${extraContext || 'No extra guidance.'}\n\nRules:\n- Return valid JSON only with keys question and answers.\n- answers must be an array of exactly 4 short strings.\n- The first answer must be the correct one.\n- Keep the question concise and suitable for a pub quiz or trivia game.\n- Do not include markdown or explanation.\n- Do not mention these rules in the output.`;
 
   const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
@@ -156,12 +145,7 @@ Rules:
     throw err;
   }
 
-  const cleaned = content
-    .replace(/^```json\\s*/i, '')
-    .replace(/^```/i, '')
-    .replace(/```$/i, '')
-    .trim();
-
+  const cleaned = content.replace(/^```json\s*/i, '').replace(/^```/i, '').replace(/```$/i, '').trim();
   const parsed = JSON.parse(cleaned);
 
   if (!parsed.question || !Array.isArray(parsed.answers) || parsed.answers.length !== 4) {
@@ -176,6 +160,17 @@ Rules:
   };
 }
 
+function normalizeQuestion(item) {
+  return {
+    id: String(item.id || crypto.randomUUID()),
+    category: String(item.category || '').trim(),
+    question: String(item.question || '').trim(),
+    answers: Array.isArray(item.answers)
+      ? item.answers.map((a) => String(a || '').trim()).filter(Boolean)
+      : []
+  };
+}
+
 async function readQuestions() {
   await ensureFile();
   const raw = await fs.readFile(DATA_FILE, 'utf8');
@@ -186,17 +181,10 @@ async function readQuestions() {
   }
 
   let changed = false;
-
   const normalized = data.map((item) => {
-    const id = item.id || crypto.randomUUID();
-    if (!item.id) changed = true;
-
-    return {
-      id,
-      category: item.category || '',
-      question: item.question || '',
-      answers: Array.isArray(item.answers) ? item.answers : []
-    };
+    const next = normalizeQuestion(item);
+    if (!item.id || item.id !== next.id) changed = true;
+    return next;
   });
 
   if (changed) {
@@ -207,15 +195,7 @@ async function readQuestions() {
 }
 
 async function writeQuestions(questions) {
-  const normalized = questions.map((item) => ({
-    id: String(item.id || crypto.randomUUID()),
-    category: String(item.category || '').trim(),
-    question: String(item.question || '').trim(),
-    answers: Array.isArray(item.answers)
-      ? item.answers.map((a) => String(a || '').trim()).filter(Boolean)
-      : []
-  }));
-
+  const normalized = questions.map(normalizeQuestion);
   await fs.writeFile(DATA_FILE, JSON.stringify(normalized, null, 2), 'utf8');
 }
 
@@ -228,10 +208,10 @@ function validateQuestion(body) {
   const errors = [];
 
   if (!body || typeof body !== 'object') errors.push('Payload must be an object.');
-  if (!String(body.category || '').trim()) errors.push('Category is required.');
-  if (!String(body.question || '').trim()) errors.push('Question is required.');
+  if (!String(body?.category || '').trim()) errors.push('Category is required.');
+  if (!String(body?.question || '').trim()) errors.push('Question is required.');
 
-  const answers = Array.isArray(body.answers)
+  const answers = Array.isArray(body?.answers)
     ? body.answers.map((a) => String(a || '').trim()).filter(Boolean)
     : [];
 
@@ -253,15 +233,33 @@ app.post('/api/questions', async (req, res) => {
   const { errors, answers } = validateQuestion(req.body);
   if (errors.length) return res.status(400).json({ errors });
 
+  if (req.body?.id) {
+    return res.status(400).json({ error: 'POST received an id. Use PUT /api/questions/:id for updates.' });
+  }
+
   try {
     const created = await enqueueWrite(async () => {
       const questions = await readQuestions();
+      const normalizedQuestion = String(req.body.question).trim().toLowerCase();
+      const normalizedCategory = String(req.body.category).trim().toLowerCase();
+      const duplicate = questions.find((q) =>
+        q.question.trim().toLowerCase() === normalizedQuestion &&
+        q.category.trim().toLowerCase() === normalizedCategory
+      );
+
+      if (duplicate) {
+        const err = new Error('A question with the same category and text already exists.');
+        err.code = 409;
+        throw err;
+      }
+
       const item = {
         id: crypto.randomUUID(),
         category: String(req.body.category).trim(),
         question: String(req.body.question).trim(),
         answers
       };
+
       questions.push(item);
       await writeQuestions(questions);
       return item;
@@ -269,7 +267,7 @@ app.post('/api/questions', async (req, res) => {
 
     res.status(201).json(created);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(error.code || 500).json({ error: error.message });
   }
 });
 
@@ -280,16 +278,38 @@ app.put('/api/questions/:id', async (req, res) => {
   try {
     const updated = await enqueueWrite(async () => {
       const questions = await readQuestions();
-      const index = questions.findIndex((q) => q.id === req.params.id);
+      const routeId = String(req.params.id || '').trim();
+      const bodyId = String(req.body?.id || '').trim();
 
+      if (bodyId && bodyId !== routeId) {
+        const err = new Error('Route id and body id do not match.');
+        err.code = 400;
+        throw err;
+      }
+
+      const index = questions.findIndex((q) => q.id === routeId);
       if (index === -1) {
-        const err = new Error('Question not found.');
+        const err = new Error(`Question not found for id: ${routeId}`);
         err.code = 404;
         throw err;
       }
 
+      const normalizedQuestion = String(req.body.question).trim().toLowerCase();
+      const normalizedCategory = String(req.body.category).trim().toLowerCase();
+      const duplicate = questions.find((q, i) =>
+        i !== index &&
+        q.question.trim().toLowerCase() === normalizedQuestion &&
+        q.category.trim().toLowerCase() === normalizedCategory
+      );
+
+      if (duplicate) {
+        const err = new Error('Another question with the same category and text already exists.');
+        err.code = 409;
+        throw err;
+      }
+
       questions[index] = {
-        ...questions[index],
+        id: questions[index].id,
         category: String(req.body.category).trim(),
         question: String(req.body.question).trim(),
         answers
@@ -359,9 +379,8 @@ app.get('/api/questions/download', async (req, res) => {
   try {
     const questions = await readQuestions();
     const exportData = stripIds(questions);
-
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    res.setHeader('Content-Disposition', 'attachment; filename=\"questions.json\"');
+    res.setHeader('Content-Disposition', 'attachment; filename="questions.json"');
     res.send(JSON.stringify(exportData, null, 2));
   } catch (error) {
     res.status(500).json({ error: error.message });
