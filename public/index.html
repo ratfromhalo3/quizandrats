@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
@@ -458,6 +459,7 @@
               <div class="toolbar-small" style="margin-top:12px;">
                 <button type="button" id="generateButton" class="btn btn-secondary">Generate with AI</button>
                 <button type="button" id="fetchTriviaButton" class="btn btn-secondary">Fetch online trivia</button>
+                <button type="button" id="randomMillionaireButton" class="btn btn-secondary">Random millionaire</button>
               </div>
             </div>
             <div class="toolbar" style="margin-top:14px;">
@@ -494,7 +496,8 @@
       musicEnabled: false,
       musicReady: false,
       musicStarted: false,
-      currentTrackName: 'No track loaded'
+      currentTrackName: 'No track loaded',
+      millionairePool: null
     };
 
     const YT_PLAYLIST_ID = 'PL8M6xAzX1w_yqW_xO3fL4dMsF-vvxfxX7';
@@ -523,6 +526,7 @@
       duplicateButton: document.getElementById('duplicateButton'),
       generateButton: document.getElementById('generateButton'),
       fetchTriviaButton: document.getElementById('fetchTriviaButton'),
+      randomMillionaireButton: document.getElementById('randomMillionaireButton'),
       themeToggle: document.getElementById('themeToggle'),
       downloadButton: document.getElementById('downloadButton'),
       dataFilePill: document.getElementById('dataFilePill'),
@@ -1037,6 +1041,56 @@
       setStatus('Duplicated into a new draft.', 'success');
     }
 
+    function normalizeMillionaireQuestion(record) {
+      const question = String(record?.question || '').trim();
+      const category = record?.prizelevel ? `Millionaire ${record.prizelevel}` : 'Millionaire';
+      const options = Array.isArray(record?.options) ? record.options : [];
+      const answerTexts = options.map((option) => String(option?.text || '').trim()).filter(Boolean);
+      const correct = String(record?.correctanswer || '').trim();
+      const exactMatch = answerTexts.find((item) => item === correct) || '';
+      const caseInsensitiveMatch = exactMatch || answerTexts.find((item) => item.toLowerCase() === correct.toLowerCase()) || '';
+      const resolvedCorrect = caseInsensitiveMatch || correct;
+      const wrongAnswers = answerTexts.filter((item) => item.toLowerCase() !== resolvedCorrect.toLowerCase());
+      const answers = [resolvedCorrect, ...wrongAnswers].filter(Boolean).slice(0, 4);
+      return {
+        category,
+        question,
+        answers,
+        correctAnswer: resolvedCorrect
+      };
+    }
+
+    async function loadMillionairePool() {
+      if (Array.isArray(state.millionairePool)) return state.millionairePool;
+      const response = await fetch('./millionaire_questions.json', { cache: 'no-store' });
+      if (!response.ok) throw new Error('Could not load millionaire_questions.json');
+      const data = await response.json();
+      const pool = Array.isArray(data) ? data : Array.isArray(data?.questions) ? data.questions : [];
+      state.millionairePool = pool.filter((item) => item && item.question && item.correctanswer && Array.isArray(item.options));
+      return state.millionairePool;
+    }
+
+    async function fillRandomMillionaireQuestion() {
+      setStatus('Loading random Millionaire question...');
+      try {
+        const pool = await loadMillionairePool();
+        if (!pool.length) {
+          setStatus('No Millionaire questions were found in millionaire_questions.json.', 'error');
+          return;
+        }
+        const record = pool[Math.floor(Math.random() * pool.length)];
+        const normalized = normalizeMillionaireQuestion(record);
+        if (!normalized.question || normalized.answers.length !== 4) {
+          setStatus('Selected Millionaire question was missing required data.', 'error');
+          return;
+        }
+        applyGeneratedContent(normalized);
+        setStatus('Random Millionaire question loaded with the correct answer first.', 'success');
+      } catch (error) {
+        setStatus(error.message || 'Could not load millionaire_questions.json.', 'error');
+      }
+    }
+
     el.form.addEventListener('submit', saveQuestion);
     el.searchInput.addEventListener('input', renderList);
     el.categoryFilter.addEventListener('change', renderList);
@@ -1051,6 +1105,7 @@
     el.deleteButton.addEventListener('click', deleteQuestion);
     el.generateButton.addEventListener('click', generateQuestion);
     el.fetchTriviaButton.addEventListener('click', fetchTrivia);
+    el.randomMillionaireButton.addEventListener('click', fillRandomMillionaireQuestion);
     el.resetButton.addEventListener('click', resetForm);
     el.duplicateButton.addEventListener('click', duplicateQuestion);
     el.themeToggle.addEventListener('click', () => {
