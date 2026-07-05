@@ -1,6 +1,7 @@
 const express = require('express');
 const fs = require('fs/promises');
 const path = require('path');
+const crypto = require('crypto');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -98,10 +99,10 @@ async function generateWithOpenRouter(category) {
     err.code = 500;
     throw err;
   }
-  
+
   const extraContext = CATEGORY_CONTEXT[category] || '';
 
-const prompt = `Create one multiple-choice quiz item for the category: ${category}.
+  const prompt = `Create one multiple-choice quiz item for the category: ${category}.
 
 Extra category guidance:
 ${extraContext || 'No extra guidance.'}
@@ -113,7 +114,7 @@ Rules:
 - Keep the question concise and suitable for a pub quiz or trivia game.
 - Do not include markdown or explanation.
 - Do not mention these rules in the output.`;
-  
+
   const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -174,8 +175,9 @@ async function readQuestions() {
     throw new Error('questions.json must contain a JSON array');
   }
 
-  return data.map((item, index) => ({
-    id: item.id || `legacy-${index + 1}`,
+  // Ensure every record has a stable ID
+  return data.map((item) => ({
+    id: item.id || crypto.randomUUID(),
     category: item.category || '',
     question: item.question || '',
     answers: Array.isArray(item.answers) ? item.answers : []
@@ -184,6 +186,7 @@ async function readQuestions() {
 
 async function writeQuestions(questions) {
   const normalized = questions.map((item) => ({
+    id: String(item.id || crypto.randomUUID()),
     category: String(item.category || '').trim(),
     question: String(item.question || '').trim(),
     answers: Array.isArray(item.answers)
@@ -232,6 +235,7 @@ app.post('/api/questions', async (req, res) => {
     const created = await enqueueWrite(async () => {
       const questions = await readQuestions();
       const item = {
+        id: crypto.randomUUID(),
         category: String(req.body.category).trim(),
         question: String(req.body.question).trim(),
         answers
