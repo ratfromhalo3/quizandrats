@@ -104,6 +104,7 @@
         </select>
         <div class="toolbar">
           <button id="newButton" class="btn btn-primary">Add question</button>
+          <button id="downloadButton" class="btn btn-ghost" type="button">Download JSON</button>
           <button id="themeToggle" class="btn btn-ghost" type="button">Toggle theme</button>
         </div>
       </div>
@@ -187,6 +188,7 @@
       resetButton: document.getElementById('resetButton'),
       duplicateButton: document.getElementById('duplicateButton'),
       themeToggle: document.getElementById('themeToggle'),
+      downloadButton: document.getElementById('downloadButton'),
       dataFilePill: document.getElementById('dataFilePill')
     };
 
@@ -367,6 +369,10 @@
     el.themeToggle.addEventListener('click', () => {
       state.theme = state.theme === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', state.theme);
+    });
+
+    el.downloadButton.addEventListener('click', () => {
+      window.location.href = '/api/questions/download';
     });
 
     loadMeta();
