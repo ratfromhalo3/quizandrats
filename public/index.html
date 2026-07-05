@@ -80,6 +80,9 @@
     .status.error { color: #ffd0d0; }
     .status.success { color: var(--success); }
     .empty { padding: 28px; text-align: center; color: var(--muted); font-size: 30px; line-height: 1; }
+    .music-chip { display:flex; align-items:center; gap:10px; }
+    .music-state { min-width: 120px; }
+    #youtube-bg-wrap { position: fixed; right: 12px; bottom: 12px; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
     @media (max-width: 1180px) { .app { grid-template-columns: 1fr; } .editor-grid { grid-template-columns: 1fr; } .portrait { grid-template-columns: auto 1fr auto; align-items: center; } .portrait-frame { width: 86px; } .question-text { font-size: 38px; } }
     @media (max-width: 760px) { body { font-size: 22px; } .app { padding: 10px; gap: 10px; } .grid-2 { grid-template-columns: 1fr; } .top-hud, .brandbar { align-items: flex-start; flex-direction: column; } .toolbar, .toolbar-small { flex-direction: column; } .btn { width: 100%; } .question-text { font-size: 32px; } .editor-grid { gap: 10px; } .portrait { grid-template-columns: 1fr; } }
   </style>
@@ -105,7 +108,15 @@
     </aside>
 
     <main class="main-shell">
-      <div class="bezel top-hud"><div class="top-hud-title">Retro quiz editor console</div><span class="pill" id="dataFilePill">Data file: loading...</span></div>
+      <div class="bezel top-hud">
+        <div class="top-hud-title">Retro quiz editor console</div>
+        <div class="toolbar-small">
+          <span class="pill" id="dataFilePill">Data file: loading...</span>
+          <span class="pill music-state" id="musicStatus">Music: off</span>
+          <button type="button" id="musicToggle" class="btn btn-secondary">Music on</button>
+        </div>
+      </div>
+
       <section class="bezel question-board"><small id="formTitle">Select a question</small><div id="questionPreview" class="question-text">Choose a question on the left or create a new one.</div></section>
       <section class="editor-grid">
         <div class="bezel portrait screen"><div class="portrait-frame"></div><div class="portrait-label">Editor Side</div><div class="orb-row"><span class="orb"></span><span class="orb"></span><span class="orb"></span><span class="orb"></span></div></div>
@@ -127,8 +138,8 @@
               <label>Answers</label>
               <div id="answers" class="answers"></div>
               <div class="toolbar-small" style="margin-top:12px;">
-                <button type="button" id="addAnswerButton" class="btn btn-secondary">Add answer</button>
                 <button type="button" id="generateButton" class="btn btn-secondary">Generate with AI</button>
+                <button type="button" id="fetchTriviaButton" class="btn btn-secondary">Fetch online trivia</button>
               </div>
             </div>
             <div class="toolbar" style="margin-top:14px;">
@@ -146,35 +157,121 @@
     </main>
   </div>
 
+  <div id="youtube-bg-wrap"><div id="youtube-player"></div></div>
+
+  <script src="https://www.youtube.com/iframe_api"></script>
   <script>
-    const state = { all: [], filtered: [], selectedId: null, mode: 'edit', theme: matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light' };
-    const el = {
-      list: document.getElementById('list'), entryCount: document.getElementById('entryCount'), categoryCount: document.getElementById('categoryCount'), categoryFilter: document.getElementById('categoryFilter'), searchInput: document.getElementById('searchInput'), form: document.getElementById('questionForm'), emptyState: document.getElementById('emptyState'), formTitle: document.getElementById('formTitle'), questionPreview: document.getElementById('questionPreview'), questionId: document.getElementById('questionId'), categorySelect: document.getElementById('categorySelect'), categoryInput: document.getElementById('categoryInput'), questionInput: document.getElementById('questionInput'), answers: document.getElementById('answers'), status: document.getElementById('status'), newButton: document.getElementById('newButton'), addAnswerButton: document.getElementById('addAnswerButton'), deleteButton: document.getElementById('deleteButton'), resetButton: document.getElementById('resetButton'), duplicateButton: document.getElementById('duplicateButton'), generateButton: document.getElementById('generateButton'), themeToggle: document.getElementById('themeToggle'), downloadButton: document.getElementById('downloadButton'), dataFilePill: document.getElementById('dataFilePill')
+    const state = {
+      all: [],
+      filtered: [],
+      selectedId: null,
+      mode: 'edit',
+      theme: matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
+      musicEnabled: false,
+      musicReady: false,
+      musicStarted: false
     };
+
+    const YT_PLAYLIST_ID = 'PL8M6xAzX1w_yqW_xO3fL4dMsF-vvxfxX7';
+    const YT_VIDEO_IDS = ['XPz9GYgCFTU'];
+    let ytPlayer = null;
+
+    const el = {
+      list: document.getElementById('list'), entryCount: document.getElementById('entryCount'), categoryCount: document.getElementById('categoryCount'), categoryFilter: document.getElementById('categoryFilter'), searchInput: document.getElementById('searchInput'), form: document.getElementById('questionForm'), emptyState: document.getElementById('emptyState'), formTitle: document.getElementById('formTitle'), questionPreview: document.getElementById('questionPreview'), questionId: document.getElementById('questionId'), categorySelect: document.getElementById('categorySelect'), categoryInput: document.getElementById('categoryInput'), questionInput: document.getElementById('questionInput'), answers: document.getElementById('answers'), status: document.getElementById('status'), newButton: document.getElementById('newButton'), deleteButton: document.getElementById('deleteButton'), resetButton: document.getElementById('resetButton'), duplicateButton: document.getElementById('duplicateButton'), generateButton: document.getElementById('generateButton'), themeToggle: document.getElementById('themeToggle'), downloadButton: document.getElementById('downloadButton'), dataFilePill: document.getElementById('dataFilePill'), musicToggle: document.getElementById('musicToggle'), musicStatus: document.getElementById('musicStatus')
+    };
+
     document.documentElement.setAttribute('data-theme', state.theme);
+
     function setStatus(message = '', type = '') { el.status.textContent = message; el.status.className = `status ${type}`.trim(); }
     function escapeHtml(value) { return String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;'); }
     function updatePreview() { const question = el.questionInput.value.trim(); el.questionPreview.textContent = question || 'Choose a question on the left or create a new one.'; }
+
+    function updateMusicUI() {
+      el.musicStatus.textContent = `Music: ${state.musicEnabled ? 'on' : 'off'}`;
+      el.musicToggle.textContent = state.musicEnabled ? 'Music off' : 'Music on';
+    }
+
+    function startRandomPlaylistTrack() {
+      if (!ytPlayer || !state.musicReady) return;
+      const randomIndex = Math.floor(Math.random() * YT_VIDEO_IDS.length);
+      ytPlayer.loadPlaylist({
+        playlist: YT_VIDEO_IDS,
+        index: randomIndex,
+        startSeconds: 0,
+        suggestedQuality: 'small'
+      });
+      ytPlayer.setLoop(true);
+      ytPlayer.setShuffle(true);
+      ytPlayer.setVolume(18);
+      ytPlayer.playVideo();
+      state.musicStarted = true;
+    }
+
+    function enableMusic() {
+      state.musicEnabled = true;
+      updateMusicUI();
+      if (ytPlayer && state.musicReady) {
+        ytPlayer.unMute();
+        if (!state.musicStarted) startRandomPlaylistTrack();
+        else ytPlayer.playVideo();
+      }
+    }
+
+    function disableMusic() {
+      state.musicEnabled = false;
+      updateMusicUI();
+      if (ytPlayer && state.musicReady) ytPlayer.pauseVideo();
+    }
+
+    window.onYouTubeIframeAPIReady = function () {
+      ytPlayer = new YT.Player('youtube-player', {
+        height: '1',
+        width: '1',
+        videoId: YT_VIDEO_IDS[0],
+        playerVars: {
+          autoplay: 0,
+          controls: 0,
+          disablekb: 1,
+          fs: 0,
+          modestbranding: 1,
+          rel: 0,
+          playsinline: 1,
+          listType: 'playlist',
+          list: YT_PLAYLIST_ID
+        },
+        events: {
+          onReady: (event) => {
+            state.musicReady = true;
+            event.target.setVolume(18);
+            event.target.mute();
+          }
+        }
+      });
+    };
+
     function renderAnswers(values = ['Answer 1', 'Answer 2', 'Answer 3', 'Answer 4']) {
       el.answers.innerHTML = '';
       values.forEach((value, index) => {
         const row = document.createElement('div');
         row.className = 'answer-row';
-        row.innerHTML = `<span class="answer-badge">${index + 1}</span><input class="input answer-input" value="${escapeHtml(value)}" placeholder="Answer ${index + 1}" /><button type="button" class="btn btn-secondary remove-answer">Remove</button>`;
+        row.innerHTML = `<span class="answer-badge">${index + 1}</span><input class="input answer-input" value="${escapeHtml(value)}" placeholder="Answer ${index + 1}" /><button type="button" class="btn btn-secondary remove-answer">Clear</button>`;
         row.querySelector('.remove-answer').addEventListener('click', () => {
           const values = [...document.querySelectorAll('.answer-input')].map((input) => input.value);
-          values.splice(index, 1);
+          values[index] = '';
           renderAnswers(values.length ? values : ['Answer 1', 'Answer 2', 'Answer 3', 'Answer 4']);
         });
         el.answers.appendChild(row);
       });
     }
+
     function getFormData() {
       return { id: el.questionId.value || undefined, category: (el.categorySelect.value === '__custom__' ? el.categoryInput.value : el.categorySelect.value).trim(), question: el.questionInput.value.trim(), answers: [...document.querySelectorAll('.answer-input')].map((input) => input.value.trim()).filter(Boolean) };
     }
+
     function fillForm(item, mode = 'edit') {
       state.mode = mode; state.selectedId = item?.id || null; el.form.classList.remove('hidden'); el.emptyState.classList.add('hidden'); el.questionId.value = item?.id || ''; syncCategoryEditor(item?.category || '', mode); el.questionInput.value = item?.question || ''; renderAnswers(item?.answers?.length ? item.answers : ['Answer 1', 'Answer 2', 'Answer 3', 'Answer 4']); el.formTitle.textContent = mode === 'create' ? 'Create new question' : 'Edit selected question'; el.deleteButton.classList.toggle('hidden', mode === 'create'); updatePreview(); setStatus('');
     }
+
     function renderList() {
       const query = el.searchInput.value.trim().toLowerCase(); const category = el.categoryFilter.value;
       state.filtered = state.all.filter((item) => { const matchesQuery = !query || item.question.toLowerCase().includes(query) || item.category.toLowerCase().includes(query); const matchesCategory = !category || item.category === category; return matchesQuery && matchesCategory; });
@@ -188,6 +285,7 @@
         el.list.appendChild(button);
       });
     }
+
     function syncCategoryEditor(currentCategory = '', mode = state.mode) {
       const categories = [...new Set(state.all.map((item) => item.category).filter(Boolean))].sort(); const hasCurrent = currentCategory && categories.includes(currentCategory);
       const options = ['<option value="">Select category</option>'].concat(categories.map((category) => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`)).concat(['<option value="__custom__">+ New category</option>']);
@@ -202,16 +300,19 @@
         el.categoryInput.classList.add('hidden'); el.categoryInput.value = currentCategory;
       }
     }
+
     function renderFilters() {
       const categories = [...new Set(state.all.map((item) => item.category).filter(Boolean))].sort();
       el.categoryFilter.innerHTML = '<option value="">All categories</option>' + categories.map((category) => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`).join('');
       syncCategoryEditor(state.mode === 'edit' ? (state.all.find((item) => item.id === state.selectedId)?.category || '') : '', state.mode);
       el.entryCount.textContent = state.all.length; el.categoryCount.textContent = categories.length;
     }
+
     async function loadMeta() { const res = await fetch('/api/meta'); const meta = await res.json(); el.dataFilePill.textContent = `Data file: ${meta.dataFile}`; }
     async function loadQuestions(selectFirst = false) {
       setStatus('Loading data...'); const res = await fetch('/api/questions'); const data = await res.json(); state.all = data; renderFilters(); renderList(); if (selectFirst && data.length) fillForm(data[0], 'edit'); setStatus('Loaded questions.', 'success');
     }
+
     async function saveQuestion(event) {
       event.preventDefault(); const payload = getFormData(); if (!payload.category || !payload.question || payload.answers.length !== 4) { setStatus('Category, question, and exactly four answers are required.', 'error'); return; }
       const isCreate = state.mode === 'create' || !payload.id; const url = isCreate ? '/api/questions' : `/api/questions/${payload.id}`; const method = isCreate ? 'POST' : 'PUT'; setStatus('Saving...');
@@ -219,6 +320,7 @@
       if (!res.ok) { setStatus(body.errors ? body.errors.join(' ') : body.error || 'Save failed.', 'error'); return; }
       await loadQuestions(); fillForm(body, 'edit'); setStatus('Saved successfully.', 'success');
     }
+
     async function generateQuestion() {
       const category = (el.categorySelect.value === '__custom__' ? el.categoryInput.value : el.categorySelect.value).trim();
       if (!category) { setStatus('Choose or enter a category before generating.', 'error'); return; }
@@ -229,26 +331,41 @@
       fillForm({ category: body.category, question: body.question, answers: body.answers }, 'create');
       setStatus('AI question generated. Answer 1 is the correct answer. Review it before saving.', 'success');
     }
+
     async function deleteQuestion() {
       const id = el.questionId.value; if (!id) return; if (!confirm('Delete this question?')) return;
       const res = await fetch(`/api/questions/${id}`, { method: 'DELETE' });
       if (!res.ok) { const body = await res.json(); setStatus(body.error || 'Delete failed.', 'error'); return; }
       el.form.classList.add('hidden'); el.emptyState.classList.remove('hidden'); state.selectedId = null; el.questionPreview.textContent = 'Choose a question on the left or create a new one.'; await loadQuestions(); setStatus('Question deleted.', 'success');
     }
+
     el.form.addEventListener('submit', saveQuestion);
     el.searchInput.addEventListener('input', renderList);
     el.categoryFilter.addEventListener('change', renderList);
     el.categorySelect.addEventListener('change', () => { const isCustom = el.categorySelect.value === '__custom__'; el.categoryInput.classList.toggle('hidden', !isCustom); if (!isCustom) el.categoryInput.value = ''; if (isCustom) el.categoryInput.focus(); });
     el.questionInput.addEventListener('input', updatePreview);
     el.newButton.addEventListener('click', () => fillForm({ category: '', question: '', answers: ['Answer 1', 'Answer 2', 'Answer 3', 'Answer 4'] }, 'create'));
-    el.addAnswerButton.addEventListener('click', () => { const values = [...document.querySelectorAll('.answer-input')].map((input) => input.value); if (values.length < 4) values.push(`Answer ${values.length + 1}`); renderAnswers(values.slice(0, 4)); });
     el.deleteButton.addEventListener('click', deleteQuestion);
     el.generateButton.addEventListener('click', generateQuestion);
+    document.getElementById('fetchTriviaButton').addEventListener('click', async () => {
+      const category = (el.categorySelect.value === '__custom__' ? el.categoryInput.value : el.categorySelect.value).trim();
+      if (!category) { setStatus('Choose or enter a category before fetching trivia.', 'error'); return; }
+      setStatus('Fetching trivia question...');
+      const res = await fetch('/api/questions/trivia', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ category }) });
+      const body = await res.json();
+      if (!res.ok) { setStatus(body.error || 'Trivia fetch failed.', 'error'); return; }
+      fillForm({ category: body.category, question: body.question, answers: body.answers }, 'create');
+      setStatus(`Trivia question loaded from ${body.sourceCategory}. Answer 1 is the correct answer.`, 'success');
+    });
     el.resetButton.addEventListener('click', () => { if (state.mode === 'create') fillForm({ category: '', question: '', answers: ['Answer 1', 'Answer 2', 'Answer 3', 'Answer 4'] }, 'create'); else { const item = state.all.find((q) => q.id === state.selectedId); if (item) fillForm(item, 'edit'); } });
     el.duplicateButton.addEventListener('click', () => { const item = getFormData(); fillForm({ ...item, id: '', question: item.question ? `${item.question} (copy)` : '', answers: item.answers.length ? item.answers : ['Answer 1', 'Answer 2', 'Answer 3', 'Answer 4'] }, 'create'); setStatus('Duplicated into a new draft.', 'success'); });
     el.themeToggle.addEventListener('click', () => { state.theme = state.theme === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', state.theme); });
     el.downloadButton.addEventListener('click', () => { window.location.href = '/api/questions/download'; });
-    loadMeta(); loadQuestions(true);
+    el.musicToggle.addEventListener('click', () => { if (state.musicEnabled) disableMusic(); else enableMusic(); });
+
+    updateMusicUI();
+    loadMeta();
+    loadQuestions(true);
   </script>
 </body>
 </html>
