@@ -138,6 +138,16 @@ app.delete('/api/questions/:id', async (req, res) => {
   }
 });
 
+
+app.get('/api/questions/download', async (req, res) => {
+  try {
+    await ensureFile();
+    res.download(DATA_FILE, 'questions.json');
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.get('/api/meta', async (req, res) => {
   try {
     const questions = await readQuestions();
