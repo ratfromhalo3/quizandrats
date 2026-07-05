@@ -753,39 +753,62 @@
       }
     }
 
-    async function saveQuestion(event) {
-      event.preventDefault();
-      const payload = getFormData();
-      if (!payload.category || !payload.question || payload.answers.length !== 4) {
-        setStatus('Category, question, and exactly four answers are required.', 'error');
-        return;
-      }
+async function saveQuestion(event) {
+  event.preventDefault();
 
-      if (state.mode === 'edit' && !payload.id) {
-        setStatus('Missing question ID, cannot update safely.', 'error');
-        return;
-      }
+  const payload = getFormData();
+  if (!payload.category || !payload.question || payload.answers.length !== 4) {
+    setStatus('Category, question, and exactly four answers are required.', 'error');
+    return;
+  }
 
-      const isCreate = state.mode === 'create';
-      const url = isCreate ? '/api/questions' : `/api/questions/${payload.id}`;
-      const method = isCreate ? 'POST' : 'PUT';
-      setStatus('Saving...');
+  const isCreate = state.mode === 'create';
+  if (!isCreate && !payload.id) {
+    setStatus('Missing question ID, cannot update safely.', 'error');
+    return;
+  }
 
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const body = res.status === 204 ? null : await res.json();
-      if (!res.ok) {
-        setStatus(body.errors ? body.errors.join(' ') : body.error || 'Save failed.', 'error');
-        return;
-      }
-      await loadQuestions();
-      fillForm(body, 'edit');
-      setStatus('Saved successfully.', 'success');
+  const url = isCreate ? '/api/questions' : `/api/questions/${encodeURIComponent(payload.id)}`;
+  const method = isCreate ? 'POST' : 'PUT';
+
+  setStatus('Saving...');
+
+  try {
+    const res = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        category: payload.category,
+        question: payload.question,
+        answers: payload.answers
+      })
+    });
+
+    const body = res.status === 204 ? null : await res.json();
+
+    if (!res.ok) {
+      setStatus(body?.errors ? body.errors.join(' ') : body?.error || 'Save failed.', 'error');
+      return;
     }
 
+    const savedId = isCreate ? body.id : payload.id;
+
+    await loadQuestions(false);
+
+    const savedItem = state.all.find((q) => q.id === savedId);
+    if (savedItem) {
+      fillForm(savedItem, 'edit');
+    } else {
+      state.selectedId = null;
+      el.form.classList.add('hidden');
+      el.emptyState.classList.remove('hidden');
+    }
+
+    setStatus('Saved successfully.', 'success');
+  } catch (err) {
+    setStatus(err.message || 'Save failed.', 'error');
+  }
+}
     async function generateQuestion() {
       const category = (el.categorySelect.value === '__custom__' ? el.categoryInput.value : el.categorySelect.value).trim();
       if (!category) {
