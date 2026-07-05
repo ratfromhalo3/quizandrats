@@ -7,6 +7,22 @@ const PORT = process.env.PORT || 3000;
 const DATA_FILE = process.env.DATA_FILE || path.join(__dirname, 'questions.json');
 const OPENTDB_BASE = 'https://opentdb.com';
 
+const CATEGORY_CONTEXT = {
+  "General Knowledge": "Exclude sports entirely. Prefer broad general knowledge, history, geography, science, inventions, common facts, and culture.",
+  "Music": "Use artists, songs, albums, bands, lyrics, chart trivia, instruments, genres, and music history.",
+  "Films": "Use films, actors, directors, plots, quotes, franchises, awards, and cinema history.",
+  "Television": "Use TV shows, presenters, sitcoms, dramas, game shows, sketch shows, channels, and television history.",
+  "Video Games": "Use games, characters, consoles, publishers, release facts, gameplay, gaming history, and classic gaming trivia.",
+  "Books & Comics": "Use novels, authors, comic characters, publishers, storylines, literary trivia, graphic novels, and classic comics.",
+  "Formula 1": "Use Formula 1 only: drivers, teams, circuits, constructors, championships, seasons, records, and race history.",
+  "Dead or Alive": "Create a question asking which one is alive or which one is dead. Provide exactly four people and ensure exactly one answer satisfies the question. Avoid ambiguous cases.",
+  "Famous Quotes": "Use famous quotations and identify the speaker, source, or context. The correct answer should usually be the person who said the quote.",
+  "Noel's House Party/Mr Blobby": "Focus on Noel's House Party, Mr Blobby, and nostalgic UK children's and family TV such as ChuckleVision, Bucky O'Hare, Fun House, Pat Sharpe, Saturday morning TV, CITV, CBBC, and similar UK nostalgia.",
+  "Resident Evil": "Use Resident Evil games, characters, enemies, locations, weapons, storylines, spin-offs, and development history.",
+  "Neil Breen": "Use Neil Breen films, recurring themes, scenes, characters, production trivia, and cult-movie facts.",
+  "Crime Exchange Prices": "Focus on CeX UK exchange prices, trade-in values, item pricing, company history, founders, owners, and UK second-hand electronics retail facts. Keep facts plausible and UK-specific."
+};
+
 let writeQueue = Promise.resolve();
 
 app.use(express.json({ limit: '2mb' }));
@@ -82,9 +98,22 @@ async function generateWithOpenRouter(category) {
     err.code = 500;
     throw err;
   }
+  
+  const extraContext = CATEGORY_CONTEXT[category] || '';
 
-  const prompt = `Create one multiple-choice quiz item for the category: ${category}. Return valid JSON only with keys question and answers. answers must be an array of exactly 4 short strings, and the first answer must be the correct one. Do not include markdown or explanation.`;
+const prompt = `Create one multiple-choice quiz item for the category: ${category}.
 
+Extra category guidance:
+${extraContext || 'No extra guidance.'}
+
+Rules:
+- Return valid JSON only with keys question and answers.
+- answers must be an array of exactly 4 short strings.
+- The first answer must be the correct one.
+- Keep the question concise and suitable for a pub quiz or trivia game.
+- Do not include markdown or explanation.
+- Do not mention these rules in the output.`;
+  
   const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
     headers: {
