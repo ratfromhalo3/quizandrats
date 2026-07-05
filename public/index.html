@@ -78,63 +78,31 @@
     .sidebar { display: grid; grid-template-rows: auto 1fr; overflow: hidden; }
     .sidebar-top { padding: 14px; display: grid; gap: 14px; background: linear-gradient(180deg, #14638b, #0a4669); }
     .brandbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      font-family: var(--font-display);
-      font-size: 14px;
-      line-height: 1.4;
-      text-transform: uppercase;
-      color: #fff6c2;
-      text-shadow: 2px 2px 0 #102031;
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+      font-family: var(--font-display); font-size: 14px; line-height: 1.4; text-transform: uppercase;
+      color: #fff6c2; text-shadow: 2px 2px 0 #102031;
     }
     .scorebox {
-      min-width: 70px;
-      text-align: center;
-      padding: 8px 10px;
-      background: rgba(0,0,0,0.3);
-      border: 2px solid #90d5ff;
-      border-radius: 6px;
-      color: #d6f4ff;
+      min-width: 70px; text-align: center; padding: 8px 10px;
+      background: rgba(0,0,0,0.3); border: 2px solid #90d5ff; border-radius: 6px; color: #d6f4ff;
     }
     .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .stat {
-      padding: 10px 12px;
-      background: rgba(0,0,0,0.22);
-      border: 2px solid #85d0ff;
-      border-radius: 6px;
-      color: var(--text);
+      padding: 10px 12px; background: rgba(0,0,0,0.22); border: 2px solid #85d0ff; border-radius: 6px; color: var(--text);
     }
-    .stat small {
-      display: block;
-      font-size: 20px;
-      color: var(--muted);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
+    .stat small { display: block; font-size: 20px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
     .toolbar, .toolbar-small { display: flex; flex-wrap: wrap; gap: 10px; }
     .toolbar-small { gap: 8px; align-items: center; }
     .input, .textarea, .select {
-      width: 100%;
-      background: var(--input);
-      border: 3px solid #85d0ff;
-      color: var(--text);
-      padding: 10px 12px;
-      border-radius: 6px;
-      box-shadow: inset 0 0 0 2px rgba(0,0,0,0.25);
+      width: 100%; background: var(--input); border: 3px solid #85d0ff; color: var(--text);
+      padding: 10px 12px; border-radius: 6px; box-shadow: inset 0 0 0 2px rgba(0,0,0,0.25);
     }
     .input::placeholder, .textarea::placeholder { color: #94c3dc; }
     .textarea { min-height: 120px; resize: vertical; }
     .btn {
-      border: 3px solid #ffe8a5;
-      border-radius: 999px;
-      padding: 8px 16px;
-      background: linear-gradient(180deg, #ff8b30, var(--red-1));
-      color: #fff8de;
-      text-shadow: 1px 1px 0 #3b1600;
-      box-shadow: 0 4px 0 #6a2406;
-      white-space: nowrap;
+      border: 3px solid #ffe8a5; border-radius: 999px; padding: 8px 16px;
+      background: linear-gradient(180deg, #ff8b30, var(--red-1)); color: #fff8de;
+      text-shadow: 1px 1px 0 #3b1600; box-shadow: 0 4px 0 #6a2406; white-space: nowrap;
     }
     .btn:hover { transform: translateY(1px); box-shadow: 0 3px 0 #6a2406; }
     .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #6a2406; }
@@ -147,126 +115,60 @@
     .list-wrap { overflow: auto; padding: 12px; background: linear-gradient(180deg, #09496f, #083455); }
     .list { display: grid; gap: 12px; }
     .item {
-      width: 100%;
-      text-align: left;
-      padding: 12px;
-      border: 3px solid #8fd7ff;
-      border-radius: 8px;
-      background: linear-gradient(180deg, var(--tile), #072d47);
-      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.06);
-      color: var(--text);
+      width: 100%; text-align: left; padding: 12px; border: 3px solid #8fd7ff; border-radius: 8px;
+      background: linear-gradient(180deg, var(--tile), #072d47); box-shadow: inset 0 0 0 2px rgba(255,255,255,0.06); color: var(--text);
     }
     .item.active { background: linear-gradient(180deg, var(--tile-active), #084464); border-color: #ffe6a2; }
     .item h3 { margin: 0 0 6px; font-size: 28px; line-height: 1; }
     .item p { margin: 0; color: var(--muted); font-size: 22px; }
     .item-meta { margin-top: 8px; display: flex; justify-content: space-between; gap: 10px; align-items: center; }
     .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: rgba(255,198,77,0.18);
-      color: #fff2b3;
-      border: 2px solid rgba(255,234,171,0.7);
-      font-size: 20px;
+      display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px;
+      background: rgba(255,198,77,0.18); color: #fff2b3; border: 2px solid rgba(255,234,171,0.7); font-size: 20px;
     }
     .main-shell { display: grid; grid-template-rows: auto auto 1fr; gap: 16px; }
     .top-hud {
-      padding: 10px 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      background: linear-gradient(180deg, #1d6192, #0d4262);
-      flex-wrap: wrap;
+      padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      background: linear-gradient(180deg, #1d6192, #0d4262); flex-wrap: wrap;
     }
     .top-hud-title {
-      font-family: var(--font-display);
-      font-size: 14px;
-      line-height: 1.5;
-      text-transform: uppercase;
-      color: #fff7c9;
-      text-shadow: 2px 2px 0 #102031;
+      font-family: var(--font-display); font-size: 14px; line-height: 1.5; text-transform: uppercase;
+      color: #fff7c9; text-shadow: 2px 2px 0 #102031;
     }
     .question-board {
-      padding: 18px;
-      background: linear-gradient(180deg, #0b8420, #0a6417);
-      min-height: 140px;
-      display: grid;
-      gap: 10px;
-      align-content: start;
+      padding: 18px; background: linear-gradient(180deg, #0b8420, #0a6417); min-height: 140px; display: grid; gap: 10px; align-content: start;
     }
-    .question-board small {
-      font-family: var(--font-display);
-      font-size: 12px;
-      color: #e8ffc3;
-      text-transform: uppercase;
-    }
+    .question-board small { font-family: var(--font-display); font-size: 12px; color: #e8ffc3; text-transform: uppercase; }
     .question-text {
-      font-size: 46px;
-      line-height: 0.92;
-      color: #fbffff;
-      text-shadow: 2px 2px 0 rgba(0,0,0,0.35);
-      min-height: 64px;
+      font-size: 46px; line-height: 0.92; color: #fbffff; text-shadow: 2px 2px 0 rgba(0,0,0,0.35); min-height: 64px;
     }
     .editor-grid { display: grid; grid-template-columns: 188px minmax(0,1fr) 188px; gap: 16px; align-items: start; }
-    .portrait {
-      padding: 10px;
-      background: linear-gradient(180deg, #1570a2, #0a5079);
-      display: grid;
-      gap: 10px;
-      justify-items: center;
-    }
+    .portrait { padding: 10px; background: linear-gradient(180deg, #1570a2, #0a5079); display: grid; gap: 10px; justify-items: center; }
     .portrait-frame {
-      width: 132px;
-      aspect-ratio: 1;
-      border-radius: 16px;
-      border: 4px solid #fbe298;
-      background: #12304d;
-      overflow: hidden;
+      width: 132px; aspect-ratio: 1; border-radius: 16px; border: 4px solid #fbe298; background: #12304d; overflow: hidden;
       box-shadow: inset 0 0 0 4px #7f3f10;
     }
-    .portrait-frame img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
+    .portrait-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .portrait-label {
-      font-family: var(--font-display);
-      font-size: 12px;
-      color: #ffef98;
-      text-align: center;
-      line-height: 1.5;
-      text-transform: uppercase;
+      font-family: var(--font-display); font-size: 12px; color: #ffef98; text-align: center; line-height: 1.5; text-transform: uppercase;
     }
     .orb-row { display: flex; gap: 6px; }
-    .orb { width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff, #f8c9d8 30%, #9f3753 72%); border: 2px solid #fbe298; }
+    .orb {
+      width: 18px; height: 18px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #fff, #f8c9d8 30%, #9f3753 72%); border: 2px solid #fbe298;
+    }
     .center-panel { padding: 14px; background: linear-gradient(180deg, #0a5e83, #083e5f); display: grid; gap: 12px; }
     .field { display: grid; gap: 6px; }
     .field label {
-      font-family: var(--font-display);
-      font-size: 11px;
-      color: #fff2b5;
-      text-transform: uppercase;
-      line-height: 1.5;
+      font-family: var(--font-display); font-size: 11px; color: #fff2b5; text-transform: uppercase; line-height: 1.5;
     }
     .grid-2 { display: grid; grid-template-columns: 1fr 1.4fr; gap: 12px; }
     .answers { display: grid; gap: 10px; }
     .answer-row { display: grid; grid-template-columns: auto minmax(0,1fr) auto; gap: 10px; align-items: center; }
     .answer-badge {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      font-family: var(--font-display);
-      font-size: 12px;
-      color: #fff6da;
-      background: linear-gradient(180deg, #ff9935, #be4109);
-      border: 3px solid #ffe8a5;
-      box-shadow: 0 2px 0 #672405;
+      width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
+      font-family: var(--font-display); font-size: 12px; color: #fff6da;
+      background: linear-gradient(180deg, #ff9935, #be4109); border: 3px solid #ffe8a5; box-shadow: 0 2px 0 #672405;
     }
     .status { min-height: 32px; color: #fff5c4; font-size: 24px; }
     .status.error { color: #ffd0d0; }
@@ -274,33 +176,13 @@
     .empty { padding: 28px; text-align: center; color: var(--muted); font-size: 30px; line-height: 1; }
     .music-state { min-width: 120px; }
     .music-visualizer { min-width: 240px; padding: 6px; }
-    .visualizer-screen {
-      padding: 10px 12px;
-      background: linear-gradient(180deg, #0b8420, #0a6417);
-      display: grid;
-      gap: 8px;
-    }
-    .visualizer-label {
-      font-family: var(--font-display);
-      font-size: 10px;
-      color: #fff4b0;
-      text-transform: uppercase;
-      line-height: 1.4;
-    }
-    .visualizer-bars {
-      height: 68px;
-      display: flex;
-      align-items: end;
-      gap: 6px;
-    }
+    .visualizer-screen { padding: 10px 12px; background: linear-gradient(180deg, #0b8420, #0a6417); display: grid; gap: 8px; }
+    .visualizer-label { font-family: var(--font-display); font-size: 10px; color: #fff4b0; text-transform: uppercase; line-height: 1.4; }
+    .visualizer-bars { height: 68px; display: flex; align-items: end; gap: 6px; }
     .visualizer-bars .bar {
-      width: 10px;
-      height: 18%;
-      border-radius: 3px 3px 0 0;
+      width: 10px; height: 18%; border-radius: 3px 3px 0 0;
       background: linear-gradient(180deg, #ffe48c, #ff8e2b 55%, #c53b08 100%);
-      border: 2px solid rgba(255, 241, 186, 0.75);
-      box-shadow: 0 0 10px rgba(255, 195, 94, 0.2);
-      transform-origin: bottom center;
+      border: 2px solid rgba(255, 241, 186, 0.75); box-shadow: 0 0 10px rgba(255, 195, 94, 0.2); transform-origin: bottom center;
     }
     .visualizer-bars.playing .bar { animation: equalize 900ms steps(6, end) infinite; }
     .visualizer-bars.playing .bar:nth-child(1)  { animation-duration: 780ms; }
@@ -316,28 +198,10 @@
     .visualizer-bars.playing .bar:nth-child(11) { animation-duration: 720ms; }
     .visualizer-bars.playing .bar:nth-child(12) { animation-duration: 1080ms; }
     @keyframes equalize {
-      0% { height: 14%; }
-      10% { height: 82%; }
-      20% { height: 38%; }
-      30% { height: 94%; }
-      40% { height: 22%; }
-      50% { height: 68%; }
-      60% { height: 28%; }
-      70% { height: 88%; }
-      80% { height: 44%; }
-      90% { height: 74%; }
-      100% { height: 18%; }
+      0% { height: 14%; } 10% { height: 82%; } 20% { height: 38%; } 30% { height: 94%; } 40% { height: 22%; }
+      50% { height: 68%; } 60% { height: 28%; } 70% { height: 88%; } 80% { height: 44%; } 90% { height: 74%; } 100% { height: 18%; }
     }
-    #youtube-bg-wrap {
-      position: fixed;
-      right: 12px;
-      bottom: 12px;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      opacity: 0;
-      pointer-events: none;
-    }
+    #youtube-bg-wrap { position: fixed; right: 12px; bottom: 12px; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
     @media (max-width: 1180px) {
       .app { grid-template-columns: 1fr; }
       .editor-grid { grid-template-columns: 1fr; }
@@ -371,7 +235,7 @@
         <input id="searchInput" class="input" type="search" placeholder="Search questions or categories" />
         <select id="categoryFilter" class="select"><option value="">All categories</option></select>
         <div class="toolbar-small">
-          <button id="newButton" class="btn">Add question</button>
+          <button id="newButton" class="btn" type="button">Add question</button>
           <button id="downloadButton" class="btn btn-secondary" type="button">Download JSON</button>
           <button id="themeToggle" class="btn btn-secondary" type="button">Toggle theme</button>
         </div>
@@ -391,18 +255,9 @@
           <div class="screen visualizer-screen">
             <div class="visualizer-label">Audio Level</div>
             <div id="visualizer" class="visualizer-bars" aria-hidden="true">
-              <span class="bar"></span>
-              <span class="bar"></span>
-              <span class="bar"></span>
-              <span class="bar"></span>
-              <span class="bar"></span>
-              <span class="bar"></span>
-              <span class="bar"></span>
-              <span class="bar"></span>
-              <span class="bar"></span>
-              <span class="bar"></span>
-              <span class="bar"></span>
-              <span class="bar"></span>
+              <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+              <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+              <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
             </div>
           </div>
         </div>
@@ -474,7 +329,8 @@
       theme: matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
       musicEnabled: false,
       musicReady: false,
-      musicStarted: false
+      musicStarted: false,
+      isSaving: false
     };
 
     const YT_PLAYLIST_ID = 'PL8M6xAzX1w_yqW_xO3fL4dMsF-vvxfxX7';
@@ -538,25 +394,15 @@
     }
 
     function updateVisualizer() {
-      if (!el.visualizer) return;
-      const isPlaying =
-        state.musicEnabled &&
-        ytPlayer &&
-        typeof ytPlayer.getPlayerState === 'function' &&
-        ytPlayer.getPlayerState() === YT.PlayerState.PLAYING;
-
+      if (!el.visualizer || !window.YT || !YT.PlayerState) return;
+      const isPlaying = state.musicEnabled && ytPlayer && typeof ytPlayer.getPlayerState === 'function' && ytPlayer.getPlayerState() === YT.PlayerState.PLAYING;
       el.visualizer.classList.toggle('playing', !!isPlaying);
     }
 
     function startRandomPlaylistTrack() {
       if (!ytPlayer || !state.musicReady) return;
       const randomIndex = Math.floor(Math.random() * YT_VIDEO_IDS.length);
-      ytPlayer.loadPlaylist({
-        playlist: YT_VIDEO_IDS,
-        index: randomIndex,
-        startSeconds: 0,
-        suggestedQuality: 'small'
-      });
+      ytPlayer.loadPlaylist({ playlist: YT_VIDEO_IDS, index: randomIndex, startSeconds: 0, suggestedQuality: 'small' });
       ytPlayer.setLoop(true);
       ytPlayer.setVolume(18);
       ytPlayer.playVideo();
@@ -584,100 +430,47 @@
 
     window.onYouTubeIframeAPIReady = function () {
       ytPlayer = new YT.Player('youtube-player', {
-        height: '1',
-        width: '1',
-        videoId: YT_VIDEO_IDS[0],
-        playerVars: {
-          autoplay: 0,
-          controls: 0,
-          disablekb: 1,
-          fs: 0,
-          modestbranding: 1,
-          rel: 0,
-          playsinline: 1,
-          listType: 'playlist',
-          list: YT_PLAYLIST_ID
-        },
+        height: '1', width: '1', videoId: YT_VIDEO_IDS[0],
+        playerVars: { autoplay: 0, controls: 0, disablekb: 1, fs: 0, modestbranding: 1, rel: 0, playsinline: 1, listType: 'playlist', list: YT_PLAYLIST_ID },
         events: {
-          onReady: (event) => {
-            state.musicReady = true;
-            event.target.setVolume(18);
-            event.target.mute();
-            updateVisualizer();
-          },
-          onStateChange: () => {
-            updateVisualizer();
-          }
+          onReady: (event) => { state.musicReady = true; event.target.setVolume(18); event.target.mute(); updateVisualizer(); },
+          onStateChange: () => updateVisualizer()
         }
       });
     };
 
-    function renderAnswers(values = ['Answer 1', 'Answer 2', 'Answer 3', 'Answer 4']) {
+    function getSelectedItem() {
+      return state.all.find((item) => item.id === state.selectedId) || null;
+    }
+
+    function renderAnswers(values = ['', '', '', '']) {
+      const normalized = [...values];
+      while (normalized.length < 4) normalized.push('');
       el.answers.innerHTML = '';
-      values.forEach((value, index) => {
+      normalized.slice(0, 4).forEach((value, index) => {
         const row = document.createElement('div');
         row.className = 'answer-row';
-        row.innerHTML = `<span class="answer-badge">${index + 1}</span><input class="input answer-input" value="${escapeHtml(value)}" placeholder="Answer ${index + 1}" /><button type="button" class="btn btn-secondary remove-answer">Clear</button>`;
-        row.querySelector('.remove-answer').addEventListener('click', () => {
-          const currentValues = [...document.querySelectorAll('.answer-input')].map((input) => input.value);
-          currentValues[index] = '';
-          renderAnswers(currentValues.length ? currentValues : ['Answer 1', 'Answer 2', 'Answer 3', 'Answer 4']);
+        row.innerHTML = `<span class="answer-badge">${index + 1}</span><input class="input answer-input" value="${escapeHtml(value)}" placeholder="Answer ${index + 1}" /><button type="button" class="btn btn-secondary clear-answer">Clear</button>`;
+        row.querySelector('.clear-answer').addEventListener('click', () => {
+          row.querySelector('.answer-input').value = '';
         });
         el.answers.appendChild(row);
       });
     }
 
     function getFormData() {
+      const category = (el.categorySelect.value === '__custom__' ? el.categoryInput.value : el.categorySelect.value).trim();
       return {
-        id: el.questionId.value || undefined,
-        category: (el.categorySelect.value === '__custom__' ? el.categoryInput.value : el.categorySelect.value).trim(),
+        id: el.questionId.value.trim() || '',
+        category,
         question: el.questionInput.value.trim(),
-        answers: [...document.querySelectorAll('.answer-input')].map((input) => input.value.trim()).filter(Boolean)
+        answers: [...el.answers.querySelectorAll('.answer-input')].map((input) => input.value.trim()).filter(Boolean)
       };
-    }
-
-    function fillForm(item, mode = 'edit') {
-      state.mode = mode;
-      state.selectedId = item?.id || null;
-      el.form.classList.remove('hidden');
-      el.emptyState.classList.add('hidden');
-      el.questionId.value = item?.id || '';
-      syncCategoryEditor(item?.category || '', mode);
-      el.questionInput.value = item?.question || '';
-      renderAnswers(item?.answers?.length ? item.answers : ['Answer 1', 'Answer 2', 'Answer 3', 'Answer 4']);
-      el.formTitle.textContent = mode === 'create' ? 'Create new question' : 'Edit selected question';
-      el.deleteButton.classList.toggle('hidden', mode === 'create');
-      updatePreview();
-      setStatus('');
-    }
-
-    function renderList() {
-      const query = el.searchInput.value.trim().toLowerCase();
-      const category = el.categoryFilter.value;
-      state.filtered = state.all.filter((item) => {
-        const matchesQuery = !query || item.question.toLowerCase().includes(query) || item.category.toLowerCase().includes(query);
-        const matchesCategory = !category || item.category === category;
-        return matchesQuery && matchesCategory;
-      });
-
-      el.list.innerHTML = '';
-      if (!state.filtered.length) {
-        el.list.innerHTML = '<div class="empty">No records match the current filters.</div>';
-        return;
-      }
-
-      state.filtered.forEach((item) => {
-        const button = document.createElement('button');
-        button.className = `item ${item.id === state.selectedId ? 'active' : ''}`;
-        button.innerHTML = `<h3>${escapeHtml(item.question)}</h3><p>${escapeHtml(item.answers.join(' • '))}</p><div class="item-meta"><span class="pill">${escapeHtml(item.category || 'Uncategorised')}</span><span>${item.answers.length} answers</span></div>`;
-        button.addEventListener('click', () => fillForm(item, 'edit'));
-        el.list.appendChild(button);
-      });
     }
 
     function syncCategoryEditor(currentCategory = '', mode = state.mode) {
       const categories = [...new Set(state.all.map((item) => item.category).filter(Boolean))].sort();
-      const hasCurrent = currentCategory && categories.includes(currentCategory);
+      const hasCurrent = !!currentCategory && categories.includes(currentCategory);
       const options = ['<option value="">Select category</option>']
         .concat(categories.map((category) => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`))
         .concat(['<option value="__custom__">+ New category</option>']);
@@ -712,12 +505,66 @@
       }
     }
 
+    function fillForm(item, mode = 'edit') {
+      state.mode = mode;
+      state.selectedId = item?.id || null;
+      el.form.classList.remove('hidden');
+      el.emptyState.classList.add('hidden');
+      el.questionId.value = item?.id || '';
+      syncCategoryEditor(item?.category || '', mode);
+      el.questionInput.value = item?.question || '';
+      renderAnswers(item?.answers?.length ? item.answers : ['', '', '', '']);
+      el.formTitle.textContent = mode === 'create' ? 'Create new question' : 'Edit selected question';
+      el.deleteButton.classList.toggle('hidden', mode === 'create');
+      updatePreview();
+      setStatus('');
+      renderList();
+    }
+
+    function clearForm() {
+      state.selectedId = null;
+      state.mode = 'edit';
+      el.form.classList.add('hidden');
+      el.emptyState.classList.remove('hidden');
+      el.formTitle.textContent = 'Select a question';
+      el.questionPreview.textContent = 'Choose a question on the left or create a new one.';
+      setStatus('');
+      renderList();
+    }
+
+    function renderList() {
+      const query = el.searchInput.value.trim().toLowerCase();
+      const category = el.categoryFilter.value;
+      state.filtered = state.all.filter((item) => {
+        const matchesQuery = !query || item.question.toLowerCase().includes(query) || item.category.toLowerCase().includes(query);
+        const matchesCategory = !category || item.category === category;
+        return matchesQuery && matchesCategory;
+      });
+
+      el.list.innerHTML = '';
+      if (!state.filtered.length) {
+        el.list.innerHTML = '<div class="empty">No records match the current filters.</div>';
+        return;
+      }
+
+      state.filtered.forEach((item) => {
+        const button = document.createElement('button');
+        button.className = `item ${item.id === state.selectedId ? 'active' : ''}`;
+        button.type = 'button';
+        button.innerHTML = `<h3>${escapeHtml(item.question)}</h3><p>${escapeHtml(item.answers.join(' • '))}</p><div class="item-meta"><span class="pill">${escapeHtml(item.category || 'Uncategorised')}</span><span>${item.answers.length} answers</span></div>`;
+        button.addEventListener('click', () => fillForm(item, 'edit'));
+        el.list.appendChild(button);
+      });
+    }
+
     function renderFilters() {
       const categories = [...new Set(state.all.map((item) => item.category).filter(Boolean))].sort();
+      const currentFilter = el.categoryFilter.value;
       el.categoryFilter.innerHTML = '<option value="">All categories</option>' + categories.map((category) => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`).join('');
-      syncCategoryEditor(state.mode === 'edit' ? (state.all.find((item) => item.id === state.selectedId)?.category || '') : '', state.mode);
+      if (categories.includes(currentFilter)) el.categoryFilter.value = currentFilter;
       el.entryCount.textContent = state.all.length;
       el.categoryCount.textContent = categories.length;
+      syncCategoryEditor(state.mode === 'edit' ? (getSelectedItem()?.category || '') : '', state.mode);
     }
 
     async function loadMeta() {
@@ -729,23 +576,28 @@
         }
         const meta = await res.json();
         el.dataFilePill.textContent = `Data file: ${meta.dataFile || 'unknown'}`;
-      } catch (err) {
+      } catch {
         el.dataFilePill.textContent = 'Data file: unavailable';
       }
     }
 
     async function loadQuestions(selectFirst = false) {
+      const previousId = state.selectedId;
       try {
-        setStatus('Loading data...');
         const res = await fetch('/api/questions');
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         state.all = Array.isArray(data) ? data : [];
         renderFilters();
         renderList();
-        if (selectFirst && state.all.length) fillForm(state.all[0], 'edit');
-        setStatus('Loaded questions.', 'success');
-      } catch (err) {
+
+        if (previousId) {
+          const current = state.all.find((item) => item.id === previousId);
+          if (current && state.mode !== 'create') fillForm(current, 'edit');
+        } else if (selectFirst && state.all.length) {
+          fillForm(state.all[0], 'edit');
+        }
+      } catch {
         state.all = [];
         renderFilters();
         renderList();
@@ -753,62 +605,66 @@
       }
     }
 
-async function saveQuestion(event) {
-  event.preventDefault();
+    async function saveQuestion(event) {
+      event.preventDefault();
+      if (state.isSaving) return;
 
-  const payload = getFormData();
-  if (!payload.category || !payload.question || payload.answers.length !== 4) {
-    setStatus('Category, question, and exactly four answers are required.', 'error');
-    return;
-  }
+      const payload = getFormData();
+      if (!payload.category || !payload.question || payload.answers.length !== 4) {
+        setStatus('Category, question, and exactly four answers are required.', 'error');
+        return;
+      }
 
-  const isCreate = state.mode === 'create';
-  if (!isCreate && !payload.id) {
-    setStatus('Missing question ID, cannot update safely.', 'error');
-    return;
-  }
+      const isCreate = state.mode === 'create';
+      if (!isCreate && !payload.id) {
+        setStatus('Missing question ID, cannot update safely.', 'error');
+        return;
+      }
 
-  const url = isCreate ? '/api/questions' : `/api/questions/${encodeURIComponent(payload.id)}`;
-  const method = isCreate ? 'POST' : 'PUT';
+      const url = isCreate ? '/api/questions' : `/api/questions/${encodeURIComponent(payload.id)}`;
+      const method = isCreate ? 'POST' : 'PUT';
 
-  setStatus('Saving...');
+      state.isSaving = true;
+      setStatus(isCreate ? 'Creating question...' : 'Updating question...');
 
-  try {
-    const res = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        category: payload.category,
-        question: payload.question,
-        answers: payload.answers
-      })
-    });
+      try {
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            category: payload.category,
+            question: payload.question,
+            answers: payload.answers
+          })
+        });
 
-    const body = res.status === 204 ? null : await res.json();
+        const body = res.status === 204 ? null : await res.json();
+        if (!res.ok) {
+          setStatus(body?.errors ? body.errors.join(' ') : body?.error || 'Save failed.', 'error');
+          return;
+        }
 
-    if (!res.ok) {
-      setStatus(body?.errors ? body.errors.join(' ') : body?.error || 'Save failed.', 'error');
-      return;
+        const savedId = isCreate ? body?.id : payload.id;
+        state.selectedId = savedId || null;
+        state.mode = 'edit';
+
+        await loadQuestions(false);
+
+        const savedItem = state.all.find((item) => item.id === savedId);
+        if (savedItem) {
+          fillForm(savedItem, 'edit');
+          setStatus(isCreate ? 'Question created successfully.' : 'Question updated successfully.', 'success');
+        } else {
+          clearForm();
+          setStatus('Saved, but the record could not be reselected.', 'error');
+        }
+      } catch (err) {
+        setStatus(err.message || 'Save failed.', 'error');
+      } finally {
+        state.isSaving = false;
+      }
     }
 
-    const savedId = isCreate ? body.id : payload.id;
-
-    await loadQuestions(false);
-
-    const savedItem = state.all.find((q) => q.id === savedId);
-    if (savedItem) {
-      fillForm(savedItem, 'edit');
-    } else {
-      state.selectedId = null;
-      el.form.classList.add('hidden');
-      el.emptyState.classList.remove('hidden');
-    }
-
-    setStatus('Saved successfully.', 'success');
-  } catch (err) {
-    setStatus(err.message || 'Save failed.', 'error');
-  }
-}
     async function generateQuestion() {
       const category = (el.categorySelect.value === '__custom__' ? el.categoryInput.value : el.categorySelect.value).trim();
       if (!category) {
@@ -817,35 +673,73 @@ async function saveQuestion(event) {
       }
       setStatus('Generating question with AI...');
       const res = await fetch('/api/questions/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ category })
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ category })
       });
       const body = await res.json();
       if (!res.ok) {
         setStatus(body.error || 'AI generation failed.', 'error');
         return;
       }
-      fillForm({ category: body.category, question: body.question, answers: body.answers }, 'create');
+      fillForm({ id: '', category: body.category, question: body.question, answers: body.answers }, 'create');
       setStatus('AI question generated. Answer 1 is the correct answer. Review it before saving.', 'success');
     }
 
+    async function fetchTrivia() {
+      const category = (el.categorySelect.value === '__custom__' ? el.categoryInput.value : el.categorySelect.value).trim();
+      if (!category) {
+        setStatus('Choose or enter a category before fetching trivia.', 'error');
+        return;
+      }
+      setStatus('Fetching trivia question...');
+      const res = await fetch('/api/questions/trivia', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ category })
+      });
+      const body = await res.json();
+      if (!res.ok) {
+        setStatus(body.error || 'Trivia fetch failed.', 'error');
+        return;
+      }
+      fillForm({ id: '', category: body.category, question: body.question, answers: body.answers }, 'create');
+      setStatus(`Trivia question loaded from ${body.sourceCategory}. Answer 1 is the correct answer.`, 'success');
+    }
+
     async function deleteQuestion() {
-      const id = el.questionId.value;
+      const id = el.questionId.value.trim();
       if (!id) return;
       if (!confirm('Delete this question?')) return;
-      const res = await fetch(`/api/questions/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/questions/${encodeURIComponent(id)}`, { method: 'DELETE' });
       if (!res.ok) {
-        const body = await res.json();
+        const body = await res.json().catch(() => ({}));
         setStatus(body.error || 'Delete failed.', 'error');
         return;
       }
-      el.form.classList.add('hidden');
-      el.emptyState.classList.remove('hidden');
-      state.selectedId = null;
-      el.questionPreview.textContent = 'Choose a question on the left or create a new one.';
-      await loadQuestions();
+      clearForm();
+      await loadQuestions(false);
       setStatus('Question deleted.', 'success');
+    }
+
+    function newQuestion() {
+      fillForm({ id: '', category: '', question: '', answers: ['', '', '', ''] }, 'create');
+    }
+
+    function resetForm() {
+      if (state.mode === 'create') {
+        newQuestion();
+      } else {
+        const item = getSelectedItem();
+        if (item) fillForm(item, 'edit');
+      }
+    }
+
+    function duplicateQuestion() {
+      const item = getFormData();
+      fillForm({
+        id: '',
+        category: item.category,
+        question: item.question ? `${item.question} (copy)` : '',
+        answers: item.answers.length ? item.answers : ['', '', '', '']
+      }, 'create');
+      setStatus('Duplicated into a new draft.', 'success');
     }
 
     el.form.addEventListener('submit', saveQuestion);
@@ -858,58 +752,18 @@ async function saveQuestion(event) {
       if (isCustom) el.categoryInput.focus();
     });
     el.questionInput.addEventListener('input', updatePreview);
-    el.newButton.addEventListener('click', () => fillForm({ category: '', question: '', answers: ['Answer 1', 'Answer 2', 'Answer 3', 'Answer 4'] }, 'create'));
+    el.newButton.addEventListener('click', newQuestion);
     el.deleteButton.addEventListener('click', deleteQuestion);
     el.generateButton.addEventListener('click', generateQuestion);
-    el.fetchTriviaButton.addEventListener('click', async () => {
-      const category = (el.categorySelect.value === '__custom__' ? el.categoryInput.value : el.categorySelect.value).trim();
-      if (!category) {
-        setStatus('Choose or enter a category before fetching trivia.', 'error');
-        return;
-      }
-      setStatus('Fetching trivia question...');
-      const res = await fetch('/api/questions/trivia', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ category })
-      });
-      const body = await res.json();
-      if (!res.ok) {
-        setStatus(body.error || 'Trivia fetch failed.', 'error');
-        return;
-      }
-      fillForm({ category: body.category, question: body.question, answers: body.answers }, 'create');
-      setStatus(`Trivia question loaded from ${body.sourceCategory}. Answer 1 is the correct answer.`, 'success');
-    });
-    el.resetButton.addEventListener('click', () => {
-      if (state.mode === 'create') {
-        fillForm({ category: '', question: '', answers: ['Answer 1', 'Answer 2', 'Answer 3', 'Answer 4'] }, 'create');
-      } else {
-        const item = state.all.find((q) => q.id === state.selectedId);
-        if (item) fillForm(item, 'edit');
-      }
-    });
-    el.duplicateButton.addEventListener('click', () => {
-      const item = getFormData();
-      fillForm({
-        ...item,
-        id: '',
-        question: item.question ? `${item.question} (copy)` : '',
-        answers: item.answers.length ? item.answers : ['Answer 1', 'Answer 2', 'Answer 3', 'Answer 4']
-      }, 'create');
-      setStatus('Duplicated into a new draft.', 'success');
-    });
+    el.fetchTriviaButton.addEventListener('click', fetchTrivia);
+    el.resetButton.addEventListener('click', resetForm);
+    el.duplicateButton.addEventListener('click', duplicateQuestion);
     el.themeToggle.addEventListener('click', () => {
       state.theme = state.theme === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', state.theme);
     });
-    el.downloadButton.addEventListener('click', () => {
-      window.location.href = '/api/questions/download';
-    });
-    el.musicToggle.addEventListener('click', () => {
-      if (state.musicEnabled) disableMusic();
-      else enableMusic();
-    });
+    el.downloadButton.addEventListener('click', () => { window.location.href = '/api/questions/download'; });
+    el.musicToggle.addEventListener('click', () => { state.musicEnabled ? disableMusic() : enableMusic(); });
 
     updateMusicUI();
     loadMeta();
