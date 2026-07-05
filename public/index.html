@@ -780,14 +780,29 @@
       renderList();
     }
 
+    function normalizeGeneratedAnswers(body) {
+      const answers = Array.isArray(body?.answers) ? [...body.answers] : [];
+      const correct = typeof body?.correctAnswer === 'string' ? body.correctAnswer.trim() : '';
+      const cleaned = answers.map((item) => String(item || '').trim()).filter(Boolean);
+
+      if (!correct) return cleaned.slice(0, 4);
+
+      const exactMatch = cleaned.find((item) => item === correct) || '';
+      const caseInsensitiveMatch = exactMatch || cleaned.find((item) => item.toLowerCase() === correct.toLowerCase()) || '';
+      const resolvedCorrect = caseInsensitiveMatch || correct;
+      const withoutCorrect = cleaned.filter((item) => item.toLowerCase() !== resolvedCorrect.toLowerCase());
+      return [resolvedCorrect, ...withoutCorrect].slice(0, 4);
+    }
+
     function applyGeneratedContent(body) {
       const current = getSelectedItem();
+      const normalizedAnswers = normalizeGeneratedAnswers(body);
       if (state.mode === 'edit' && current) {
         fillForm({
           id: current.id,
           category: body.category,
           question: body.question,
-          answers: body.answers
+          answers: normalizedAnswers
         }, 'edit');
         setStatus('Generated content applied to the current record. Save will update it.', 'success');
       } else {
@@ -795,7 +810,7 @@
           id: '',
           category: body.category,
           question: body.question,
-          answers: body.answers
+          answers: normalizedAnswers
         }, 'create');
         setStatus('Generated content loaded as a new draft.', 'success');
       }
