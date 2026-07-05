@@ -9,101 +9,46 @@
   <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
     :root, [data-theme="light"] {
-      --bg: #06121f;
-      --panel: #0a5f84;
-      --panel-2: #0b3f69;
-      --panel-3: #0e7b18;
-      --gold-1: #d9a52d;
-      --gold-2: #f6dc7c;
-      --gold-3: #8a4b12;
-      --red-1: #d64915;
-      --cyan: #77d2ff;
-      --text: #f6fbff;
-      --muted: #b9dbef;
-      --shadow: rgba(0,0,0,0.55);
-      --danger: #a71a1a;
-      --success: #9df25d;
-      --input: #053757;
-      --tile: #094f77;
-      --tile-active: #1182b7;
-      --font-ui: 'VT323', monospace;
-      --font-display: 'Press Start 2P', monospace;
+      --bg: #06121f; --panel: #0a5f84; --panel-2: #0b3f69; --panel-3: #0e7b18;
+      --gold-1: #d9a52d; --gold-2: #f6dc7c; --gold-3: #8a4b12; --red-1: #d64915;
+      --cyan: #77d2ff; --text: #f6fbff; --muted: #b9dbef; --shadow: rgba(0,0,0,0.55);
+      --danger: #a71a1a; --success: #9df25d; --input: #053757; --tile: #094f77; --tile-active: #1182b7;
+      --font-ui: 'VT323', monospace; --font-display: 'Press Start 2P', monospace;
     }
     [data-theme="dark"] {
-      --bg: #040b14;
-      --panel: #053f63;
-      --panel-2: #042b46;
-      --panel-3: #09590f;
-      --gold-1: #c48d16;
-      --gold-2: #ffe18a;
-      --gold-3: #663607;
-      --red-1: #b9320a;
-      --cyan: #8ce3ff;
-      --text: #f4fbff;
-      --muted: #b8d0df;
-      --shadow: rgba(0,0,0,0.68);
-      --danger: #f36a6a;
-      --success: #b8ff77;
-      --input: #03263b;
-      --tile: #073f60;
-      --tile-active: #0d6994;
+      --bg: #040b14; --panel: #053f63; --panel-2: #042b46; --panel-3: #09590f;
+      --gold-1: #c48d16; --gold-2: #ffe18a; --gold-3: #663607; --red-1: #b9320a;
+      --cyan: #8ce3ff; --text: #f4fbff; --muted: #b8d0df; --shadow: rgba(0,0,0,0.68);
+      --danger: #f36a6a; --success: #b8ff77; --input: #03263b; --tile: #073f60; --tile-active: #0d6994;
     }
     *, *::before, *::after { box-sizing: border-box; }
     html, body { margin: 0; min-height: 100%; }
     body {
-      font-family: var(--font-ui);
-      font-size: 28px;
-      color: var(--text);
+      font-family: var(--font-ui); font-size: 28px; color: var(--text);
       background: radial-gradient(circle at top, #1d3b58 0%, transparent 45%), linear-gradient(180deg, #14304d 0%, var(--bg) 100%);
       letter-spacing: 0.02em;
     }
     button, input, textarea, select { font: inherit; color: inherit; }
     button { cursor: pointer; }
+    button:disabled { opacity: 0.7; cursor: wait; }
     .hidden { display: none !important; }
     .app { min-height: 100dvh; display: grid; grid-template-columns: 360px 1fr; gap: 18px; padding: 18px; }
-    .bezel {
-      background: linear-gradient(180deg, var(--gold-2), var(--gold-1) 20%, var(--gold-3) 100%);
-      border: 4px solid #f6df8d;
-      box-shadow: 0 0 0 4px #7d420c, 0 10px 24px var(--shadow), inset 0 2px 0 rgba(255,255,255,0.5);
-      padding: 8px;
-      border-radius: 10px;
-    }
-    .screen {
-      background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
-      border: 3px solid #6cc8f5;
-      box-shadow: inset 0 0 0 3px #0a2e47, inset 0 16px 24px rgba(255,255,255,0.08);
-      border-radius: 6px;
-    }
+    .bezel { background: linear-gradient(180deg, var(--gold-2), var(--gold-1) 20%, var(--gold-3) 100%); border: 4px solid #f6df8d; box-shadow: 0 0 0 4px #7d420c, 0 10px 24px var(--shadow), inset 0 2px 0 rgba(255,255,255,0.5); padding: 8px; border-radius: 10px; }
+    .screen { background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%); border: 3px solid #6cc8f5; box-shadow: inset 0 0 0 3px #0a2e47, inset 0 16px 24px rgba(255,255,255,0.08); border-radius: 6px; }
     .sidebar, .main-shell { min-height: 0; }
     .sidebar { display: grid; grid-template-rows: auto 1fr; overflow: hidden; }
     .sidebar-top { padding: 14px; display: grid; gap: 14px; background: linear-gradient(180deg, #14638b, #0a4669); }
-    .brandbar {
-      display: flex; justify-content: space-between; align-items: center; gap: 10px;
-      font-family: var(--font-display); font-size: 14px; line-height: 1.4; text-transform: uppercase;
-      color: #fff6c2; text-shadow: 2px 2px 0 #102031;
-    }
-    .scorebox {
-      min-width: 70px; text-align: center; padding: 8px 10px;
-      background: rgba(0,0,0,0.3); border: 2px solid #90d5ff; border-radius: 6px; color: #d6f4ff;
-    }
+    .brandbar { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-family: var(--font-display); font-size: 14px; line-height: 1.4; text-transform: uppercase; color: #fff6c2; text-shadow: 2px 2px 0 #102031; }
+    .scorebox { min-width: 70px; text-align: center; padding: 8px 10px; background: rgba(0,0,0,0.3); border: 2px solid #90d5ff; border-radius: 6px; color: #d6f4ff; }
     .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .stat {
-      padding: 10px 12px; background: rgba(0,0,0,0.22); border: 2px solid #85d0ff; border-radius: 6px; color: var(--text);
-    }
+    .stat { padding: 10px 12px; background: rgba(0,0,0,0.22); border: 2px solid #85d0ff; border-radius: 6px; color: var(--text); }
     .stat small { display: block; font-size: 20px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
     .toolbar, .toolbar-small { display: flex; flex-wrap: wrap; gap: 10px; }
     .toolbar-small { gap: 8px; align-items: center; }
-    .input, .textarea, .select {
-      width: 100%; background: var(--input); border: 3px solid #85d0ff; color: var(--text);
-      padding: 10px 12px; border-radius: 6px; box-shadow: inset 0 0 0 2px rgba(0,0,0,0.25);
-    }
+    .input, .textarea, .select { width: 100%; background: var(--input); border: 3px solid #85d0ff; color: var(--text); padding: 10px 12px; border-radius: 6px; box-shadow: inset 0 0 0 2px rgba(0,0,0,0.25); }
     .input::placeholder, .textarea::placeholder { color: #94c3dc; }
     .textarea { min-height: 120px; resize: vertical; }
-    .btn {
-      border: 3px solid #ffe8a5; border-radius: 999px; padding: 8px 16px;
-      background: linear-gradient(180deg, #ff8b30, var(--red-1)); color: #fff8de;
-      text-shadow: 1px 1px 0 #3b1600; box-shadow: 0 4px 0 #6a2406; white-space: nowrap;
-    }
+    .btn { border: 3px solid #ffe8a5; border-radius: 999px; padding: 8px 16px; background: linear-gradient(180deg, #ff8b30, var(--red-1)); color: #fff8de; text-shadow: 1px 1px 0 #3b1600; box-shadow: 0 4px 0 #6a2406; white-space: nowrap; }
     .btn:hover { transform: translateY(1px); box-shadow: 0 3px 0 #6a2406; }
     .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #6a2406; }
     .btn-secondary { background: linear-gradient(180deg, #38a9e0, #0a6b96); box-shadow: 0 4px 0 #0b3c5a; }
@@ -114,113 +59,38 @@
     .btn-danger:active { box-shadow: 0 1px 0 #570909; }
     .list-wrap { overflow: auto; padding: 12px; background: linear-gradient(180deg, #09496f, #083455); }
     .list { display: grid; gap: 12px; }
-    .item {
-      width: 100%; text-align: left; padding: 12px; border: 3px solid #8fd7ff; border-radius: 8px;
-      background: linear-gradient(180deg, var(--tile), #072d47); box-shadow: inset 0 0 0 2px rgba(255,255,255,0.06); color: var(--text);
-    }
+    .item { width: 100%; text-align: left; padding: 12px; border: 3px solid #8fd7ff; border-radius: 8px; background: linear-gradient(180deg, var(--tile), #072d47); box-shadow: inset 0 0 0 2px rgba(255,255,255,0.06); color: var(--text); }
     .item.active { background: linear-gradient(180deg, var(--tile-active), #084464); border-color: #ffe6a2; }
     .item h3 { margin: 0 0 6px; font-size: 28px; line-height: 1; }
     .item p { margin: 0; color: var(--muted); font-size: 22px; }
     .item-meta { margin-top: 8px; display: flex; justify-content: space-between; gap: 10px; align-items: center; }
-    .pill {
-      display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px;
-      background: rgba(255,198,77,0.18); color: #fff2b3; border: 2px solid rgba(255,234,171,0.7); font-size: 20px;
-    }
+    .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: rgba(255,198,77,0.18); color: #fff2b3; border: 2px solid rgba(255,234,171,0.7); font-size: 20px; }
     .main-shell { display: grid; grid-template-rows: auto auto 1fr; gap: 16px; }
-    .top-hud {
-      padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px;
-      background: linear-gradient(180deg, #1d6192, #0d4262); flex-wrap: wrap;
-    }
-    .top-hud-title {
-      font-family: var(--font-display); font-size: 14px; line-height: 1.5; text-transform: uppercase;
-      color: #fff7c9; text-shadow: 2px 2px 0 #102031;
-    }
-    .question-board {
-      padding: 18px; background: linear-gradient(180deg, #0b8420, #0a6417); min-height: 140px; display: grid; gap: 10px; align-content: start;
-    }
+    .top-hud { padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px; background: linear-gradient(180deg, #1d6192, #0d4262); flex-wrap: wrap; }
+    .top-hud-title { font-family: var(--font-display); font-size: 14px; line-height: 1.5; text-transform: uppercase; color: #fff7c9; text-shadow: 2px 2px 0 #102031; }
+    .question-board { padding: 18px; background: linear-gradient(180deg, #0b8420, #0a6417); min-height: 140px; display: grid; gap: 10px; align-content: start; }
     .question-board small { font-family: var(--font-display); font-size: 12px; color: #e8ffc3; text-transform: uppercase; }
-    .question-text {
-      font-size: 46px; line-height: 0.92; color: #fbffff; text-shadow: 2px 2px 0 rgba(0,0,0,0.35); min-height: 64px;
-    }
+    .question-text { font-size: 46px; line-height: 0.92; color: #fbffff; text-shadow: 2px 2px 0 rgba(0,0,0,0.35); min-height: 64px; }
     .editor-grid { display: grid; grid-template-columns: 188px minmax(0,1fr) 188px; gap: 16px; align-items: start; }
     .portrait { padding: 10px; background: linear-gradient(180deg, #1570a2, #0a5079); display: grid; gap: 10px; justify-items: center; }
-    .portrait-frame {
-      width: 132px; aspect-ratio: 1; border-radius: 16px; border: 4px solid #fbe298; background: #12304d; overflow: hidden;
-      box-shadow: inset 0 0 0 4px #7f3f10;
-    }
+    .portrait-frame { width: 132px; aspect-ratio: 1; border-radius: 16px; border: 4px solid #fbe298; background: #12304d; overflow: hidden; box-shadow: inset 0 0 0 4px #7f3f10; }
     .portrait-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .portrait-label {
-      font-family: var(--font-display); font-size: 12px; color: #ffef98; text-align: center; line-height: 1.5; text-transform: uppercase;
-    }
+    .portrait-label { font-family: var(--font-display); font-size: 12px; color: #ffef98; text-align: center; line-height: 1.5; text-transform: uppercase; }
     .orb-row { display: flex; gap: 6px; }
-    .orb {
-      width: 18px; height: 18px; border-radius: 50%;
-      background: radial-gradient(circle at 35% 35%, #fff, #f8c9d8 30%, #9f3753 72%); border: 2px solid #fbe298;
-    }
+    .orb { width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff, #f8c9d8 30%, #9f3753 72%); border: 2px solid #fbe298; }
     .center-panel { padding: 14px; background: linear-gradient(180deg, #0a5e83, #083e5f); display: grid; gap: 12px; }
     .field { display: grid; gap: 6px; }
-    .field label {
-      font-family: var(--font-display); font-size: 11px; color: #fff2b5; text-transform: uppercase; line-height: 1.5;
-    }
+    .field label { font-family: var(--font-display); font-size: 11px; color: #fff2b5; text-transform: uppercase; line-height: 1.5; }
     .grid-2 { display: grid; grid-template-columns: 1fr 1.4fr; gap: 12px; }
     .answers { display: grid; gap: 10px; }
     .answer-row { display: grid; grid-template-columns: auto minmax(0,1fr) auto; gap: 10px; align-items: center; }
-    .answer-badge {
-      width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
-      font-family: var(--font-display); font-size: 12px; color: #fff6da;
-      background: linear-gradient(180deg, #ff9935, #be4109); border: 3px solid #ffe8a5; box-shadow: 0 2px 0 #672405;
-    }
+    .answer-badge { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-family: var(--font-display); font-size: 12px; color: #fff6da; background: linear-gradient(180deg, #ff9935, #be4109); border: 3px solid #ffe8a5; box-shadow: 0 2px 0 #672405; }
     .status { min-height: 32px; color: #fff5c4; font-size: 24px; }
     .status.error { color: #ffd0d0; }
     .status.success { color: var(--success); }
     .empty { padding: 28px; text-align: center; color: var(--muted); font-size: 30px; line-height: 1; }
-    .music-state { min-width: 120px; }
-    .music-visualizer { min-width: 240px; padding: 6px; }
-    .visualizer-screen { padding: 10px 12px; background: linear-gradient(180deg, #0b8420, #0a6417); display: grid; gap: 8px; }
-    .visualizer-label { font-family: var(--font-display); font-size: 10px; color: #fff4b0; text-transform: uppercase; line-height: 1.4; }
-    .visualizer-bars { height: 68px; display: flex; align-items: end; gap: 6px; }
-    .visualizer-bars .bar {
-      width: 10px; height: 18%; border-radius: 3px 3px 0 0;
-      background: linear-gradient(180deg, #ffe48c, #ff8e2b 55%, #c53b08 100%);
-      border: 2px solid rgba(255, 241, 186, 0.75); box-shadow: 0 0 10px rgba(255, 195, 94, 0.2); transform-origin: bottom center;
-    }
-    .visualizer-bars.playing .bar { animation: equalize 900ms steps(6, end) infinite; }
-    .visualizer-bars.playing .bar:nth-child(1)  { animation-duration: 780ms; }
-    .visualizer-bars.playing .bar:nth-child(2)  { animation-duration: 920ms; }
-    .visualizer-bars.playing .bar:nth-child(3)  { animation-duration: 700ms; }
-    .visualizer-bars.playing .bar:nth-child(4)  { animation-duration: 1100ms; }
-    .visualizer-bars.playing .bar:nth-child(5)  { animation-duration: 860ms; }
-    .visualizer-bars.playing .bar:nth-child(6)  { animation-duration: 980ms; }
-    .visualizer-bars.playing .bar:nth-child(7)  { animation-duration: 760ms; }
-    .visualizer-bars.playing .bar:nth-child(8)  { animation-duration: 1000ms; }
-    .visualizer-bars.playing .bar:nth-child(9)  { animation-duration: 840ms; }
-    .visualizer-bars.playing .bar:nth-child(10) { animation-duration: 930ms; }
-    .visualizer-bars.playing .bar:nth-child(11) { animation-duration: 720ms; }
-    .visualizer-bars.playing .bar:nth-child(12) { animation-duration: 1080ms; }
-    @keyframes equalize {
-      0% { height: 14%; } 10% { height: 82%; } 20% { height: 38%; } 30% { height: 94%; } 40% { height: 22%; }
-      50% { height: 68%; } 60% { height: 28%; } 70% { height: 88%; } 80% { height: 44%; } 90% { height: 74%; } 100% { height: 18%; }
-    }
-    #youtube-bg-wrap { position: fixed; right: 12px; bottom: 12px; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
-    @media (max-width: 1180px) {
-      .app { grid-template-columns: 1fr; }
-      .editor-grid { grid-template-columns: 1fr; }
-      .portrait { grid-template-columns: auto 1fr auto; align-items: center; }
-      .portrait-frame { width: 86px; }
-      .question-text { font-size: 38px; }
-    }
-    @media (max-width: 760px) {
-      body { font-size: 22px; }
-      .app { padding: 10px; gap: 10px; }
-      .grid-2 { grid-template-columns: 1fr; }
-      .top-hud, .brandbar { align-items: flex-start; flex-direction: column; }
-      .toolbar, .toolbar-small { flex-direction: column; align-items: stretch; }
-      .btn { width: 100%; }
-      .question-text { font-size: 32px; }
-      .editor-grid { gap: 10px; }
-      .portrait { grid-template-columns: 1fr; }
-      .music-visualizer { width: 100%; min-width: 0; }
-    }
+    @media (max-width: 1180px) { .app { grid-template-columns: 1fr; } .editor-grid { grid-template-columns: 1fr; } .portrait { grid-template-columns: auto 1fr auto; align-items: center; } .portrait-frame { width: 86px; } .question-text { font-size: 38px; } }
+    @media (max-width: 760px) { body { font-size: 22px; } .app { padding: 10px; gap: 10px; } .grid-2 { grid-template-columns: 1fr; } .top-hud, .brandbar { align-items: flex-start; flex-direction: column; } .toolbar, .toolbar-small { flex-direction: column; align-items: stretch; } .btn { width: 100%; } .question-text { font-size: 32px; } .editor-grid { gap: 10px; } .portrait { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -248,18 +118,6 @@
         <div class="top-hud-title">Retro quiz editor console</div>
         <div class="toolbar-small">
           <span class="pill" id="dataFilePill">Data file: loading...</span>
-          <span class="pill music-state" id="musicStatus">Music: off</span>
-          <button type="button" id="musicToggle" class="btn btn-secondary">Music on</button>
-        </div>
-        <div class="music-visualizer bezel">
-          <div class="screen visualizer-screen">
-            <div class="visualizer-label">Audio Level</div>
-            <div id="visualizer" class="visualizer-bars" aria-hidden="true">
-              <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
-              <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
-              <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -298,7 +156,7 @@
               </div>
             </div>
             <div class="toolbar" style="margin-top:14px;">
-              <button type="submit" class="btn">Save changes</button>
+              <button type="submit" id="saveButton" class="btn">Save changes</button>
               <button type="button" id="duplicateButton" class="btn btn-secondary">Duplicate as new</button>
               <button type="button" id="deleteButton" class="btn btn-danger">Delete</button>
               <button type="button" id="resetButton" class="btn btn-secondary">Reset</button>
@@ -317,9 +175,6 @@
     </main>
   </div>
 
-  <div id="youtube-bg-wrap"><div id="youtube-player"></div></div>
-
-  <script src="https://www.youtube.com/iframe_api"></script>
   <script>
     const state = {
       all: [],
@@ -327,15 +182,8 @@
       selectedId: null,
       mode: 'edit',
       theme: matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
-      musicEnabled: false,
-      musicReady: false,
-      musicStarted: false,
       isSaving: false
     };
-
-    const YT_PLAYLIST_ID = 'PL8M6xAzX1w_yqW_xO3fL4dMsF-vvxfxX7';
-    const YT_VIDEO_IDS = ['XPz9GYgCFTU'];
-    let ytPlayer = null;
 
     const el = {
       list: document.getElementById('list'),
@@ -362,9 +210,7 @@
       themeToggle: document.getElementById('themeToggle'),
       downloadButton: document.getElementById('downloadButton'),
       dataFilePill: document.getElementById('dataFilePill'),
-      musicToggle: document.getElementById('musicToggle'),
-      musicStatus: document.getElementById('musicStatus'),
-      visualizer: document.getElementById('visualizer')
+      saveButton: document.getElementById('saveButton')
     };
 
     document.documentElement.setAttribute('data-theme', state.theme);
@@ -372,6 +218,12 @@
     function setStatus(message = '', type = '') {
       el.status.textContent = message;
       el.status.className = `status ${type}`.trim();
+    }
+
+    function setSavingUi(isSaving) {
+      state.isSaving = isSaving;
+      el.saveButton.disabled = isSaving;
+      el.saveButton.textContent = isSaving ? 'Saving...' : 'Save changes';
     }
 
     function escapeHtml(value) {
@@ -383,64 +235,13 @@
         .replaceAll("'", '&#39;');
     }
 
+    function getSelectedItem() {
+      return state.all.find((item) => item.id === state.selectedId) || null;
+    }
+
     function updatePreview() {
       const question = el.questionInput.value.trim();
       el.questionPreview.textContent = question || 'Choose a question on the left or create a new one.';
-    }
-
-    function updateMusicUI() {
-      el.musicStatus.textContent = `Music: ${state.musicEnabled ? 'on' : 'off'}`;
-      el.musicToggle.textContent = state.musicEnabled ? 'Music off' : 'Music on';
-    }
-
-    function updateVisualizer() {
-      if (!el.visualizer || !window.YT || !YT.PlayerState) return;
-      const isPlaying = state.musicEnabled && ytPlayer && typeof ytPlayer.getPlayerState === 'function' && ytPlayer.getPlayerState() === YT.PlayerState.PLAYING;
-      el.visualizer.classList.toggle('playing', !!isPlaying);
-    }
-
-    function startRandomPlaylistTrack() {
-      if (!ytPlayer || !state.musicReady) return;
-      const randomIndex = Math.floor(Math.random() * YT_VIDEO_IDS.length);
-      ytPlayer.loadPlaylist({ playlist: YT_VIDEO_IDS, index: randomIndex, startSeconds: 0, suggestedQuality: 'small' });
-      ytPlayer.setLoop(true);
-      ytPlayer.setVolume(18);
-      ytPlayer.playVideo();
-      state.musicStarted = true;
-      updateVisualizer();
-    }
-
-    function enableMusic() {
-      state.musicEnabled = true;
-      updateMusicUI();
-      if (ytPlayer && state.musicReady) {
-        ytPlayer.unMute();
-        if (!state.musicStarted) startRandomPlaylistTrack();
-        else ytPlayer.playVideo();
-      }
-      updateVisualizer();
-    }
-
-    function disableMusic() {
-      state.musicEnabled = false;
-      updateMusicUI();
-      if (ytPlayer && state.musicReady) ytPlayer.pauseVideo();
-      updateVisualizer();
-    }
-
-    window.onYouTubeIframeAPIReady = function () {
-      ytPlayer = new YT.Player('youtube-player', {
-        height: '1', width: '1', videoId: YT_VIDEO_IDS[0],
-        playerVars: { autoplay: 0, controls: 0, disablekb: 1, fs: 0, modestbranding: 1, rel: 0, playsinline: 1, listType: 'playlist', list: YT_PLAYLIST_ID },
-        events: {
-          onReady: (event) => { state.musicReady = true; event.target.setVolume(18); event.target.mute(); updateVisualizer(); },
-          onStateChange: () => updateVisualizer()
-        }
-      });
-    };
-
-    function getSelectedItem() {
-      return state.all.find((item) => item.id === state.selectedId) || null;
     }
 
     function renderAnswers(values = ['', '', '', '']) {
@@ -459,10 +260,9 @@
     }
 
     function getFormData() {
-      const category = (el.categorySelect.value === '__custom__' ? el.categoryInput.value : el.categorySelect.value).trim();
       return {
-        id: el.questionId.value.trim() || '',
-        category,
+        id: el.questionId.value.trim(),
+        category: (el.categorySelect.value === '__custom__' ? el.categoryInput.value : el.categorySelect.value).trim(),
         question: el.questionInput.value.trim(),
         answers: [...el.answers.querySelectorAll('.answer-input')].map((input) => input.value.trim()).filter(Boolean)
       };
@@ -503,6 +303,16 @@
         el.categoryInput.classList.add('hidden');
         el.categoryInput.value = currentCategory;
       }
+    }
+
+    function renderFilters() {
+      const categories = [...new Set(state.all.map((item) => item.category).filter(Boolean))].sort();
+      const currentFilter = el.categoryFilter.value;
+      el.categoryFilter.innerHTML = '<option value="">All categories</option>' + categories.map((category) => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`).join('');
+      if (categories.includes(currentFilter)) el.categoryFilter.value = currentFilter;
+      el.entryCount.textContent = state.all.length;
+      el.categoryCount.textContent = categories.length;
+      syncCategoryEditor(state.mode === 'edit' ? (getSelectedItem()?.category || '') : '', state.mode);
     }
 
     function fillForm(item, mode = 'edit') {
@@ -557,16 +367,6 @@
       });
     }
 
-    function renderFilters() {
-      const categories = [...new Set(state.all.map((item) => item.category).filter(Boolean))].sort();
-      const currentFilter = el.categoryFilter.value;
-      el.categoryFilter.innerHTML = '<option value="">All categories</option>' + categories.map((category) => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`).join('');
-      if (categories.includes(currentFilter)) el.categoryFilter.value = currentFilter;
-      el.entryCount.textContent = state.all.length;
-      el.categoryCount.textContent = categories.length;
-      syncCategoryEditor(state.mode === 'edit' ? (getSelectedItem()?.category || '') : '', state.mode);
-    }
-
     async function loadMeta() {
       try {
         const res = await fetch('/api/meta');
@@ -583,17 +383,18 @@
 
     async function loadQuestions(selectFirst = false) {
       const previousId = state.selectedId;
+      const previousMode = state.mode;
       try {
-        const res = await fetch('/api/questions');
+        const res = await fetch('/api/questions', { cache: 'no-store' });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         state.all = Array.isArray(data) ? data : [];
         renderFilters();
         renderList();
 
-        if (previousId) {
+        if (previousId && previousMode !== 'create') {
           const current = state.all.find((item) => item.id === previousId);
-          if (current && state.mode !== 'create') fillForm(current, 'edit');
+          if (current) fillForm(current, 'edit');
         } else if (selectFirst && state.all.length) {
           fillForm(state.all[0], 'edit');
         }
@@ -607,41 +408,46 @@
 
     async function saveQuestion(event) {
       event.preventDefault();
-      if (state.isSaving) return;
+      event.stopPropagation();
+      if (state.isSaving) return false;
 
       const payload = getFormData();
+      const isCreate = state.mode === 'create';
+
       if (!payload.category || !payload.question || payload.answers.length !== 4) {
         setStatus('Category, question, and exactly four answers are required.', 'error');
-        return;
+        return false;
       }
 
-      const isCreate = state.mode === 'create';
       if (!isCreate && !payload.id) {
         setStatus('Missing question ID, cannot update safely.', 'error');
-        return;
+        return false;
       }
 
       const url = isCreate ? '/api/questions' : `/api/questions/${encodeURIComponent(payload.id)}`;
       const method = isCreate ? 'POST' : 'PUT';
 
-      state.isSaving = true;
+      setSavingUi(true);
       setStatus(isCreate ? 'Creating question...' : 'Updating question...');
 
       try {
+        const bodyToSend = {
+          id: isCreate ? undefined : payload.id,
+          category: payload.category,
+          question: payload.question,
+          answers: payload.answers
+        };
+
         const res = await fetch(url, {
           method,
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            category: payload.category,
-            question: payload.question,
-            answers: payload.answers
-          })
+          body: JSON.stringify(bodyToSend)
         });
 
-        const body = res.status === 204 ? null : await res.json();
+        const body = await res.json().catch(() => null);
         if (!res.ok) {
           setStatus(body?.errors ? body.errors.join(' ') : body?.error || 'Save failed.', 'error');
-          return;
+          return false;
         }
 
         const savedId = isCreate ? body?.id : payload.id;
@@ -651,17 +457,19 @@
         await loadQuestions(false);
 
         const savedItem = state.all.find((item) => item.id === savedId);
-        if (savedItem) {
-          fillForm(savedItem, 'edit');
-          setStatus(isCreate ? 'Question created successfully.' : 'Question updated successfully.', 'success');
-        } else {
-          clearForm();
+        if (!savedItem) {
           setStatus('Saved, but the record could not be reselected.', 'error');
+          return false;
         }
+
+        fillForm(savedItem, 'edit');
+        setStatus(isCreate ? 'Question created successfully.' : 'Question updated successfully.', 'success');
+        return false;
       } catch (err) {
         setStatus(err.message || 'Save failed.', 'error');
+        return false;
       } finally {
-        state.isSaving = false;
+        setSavingUi(false);
       }
     }
 
@@ -673,7 +481,9 @@
       }
       setStatus('Generating question with AI...');
       const res = await fetch('/api/questions/generate', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ category })
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ category })
       });
       const body = await res.json();
       if (!res.ok) {
@@ -692,7 +502,9 @@
       }
       setStatus('Fetching trivia question...');
       const res = await fetch('/api/questions/trivia', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ category })
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ category })
       });
       const body = await res.json();
       if (!res.ok) {
@@ -762,10 +574,10 @@
       state.theme = state.theme === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', state.theme);
     });
-    el.downloadButton.addEventListener('click', () => { window.location.href = '/api/questions/download'; });
-    el.musicToggle.addEventListener('click', () => { state.musicEnabled ? disableMusic() : enableMusic(); });
+    el.downloadButton.addEventListener('click', () => {
+      window.location.href = '/api/questions/download';
+    });
 
-    updateMusicUI();
     loadMeta();
     loadQuestions(true);
   </script>
