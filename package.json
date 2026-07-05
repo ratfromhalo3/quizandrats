@@ -1,0 +1,12 @@
+{
+  "name": "questions-json-editor",
+  "version": "1.0.0",
+  "description": "Web app to edit questions.json entries",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
