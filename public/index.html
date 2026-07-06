@@ -1253,10 +1253,7 @@
     el.randomMillionaireButton.addEventListener('click', fillRandomMillionaireQuestion);
     el.resetButton.addEventListener('click', resetForm);
     el.duplicateButton.addEventListener('click', duplicateQuestion);
-    el.themeToggle.addEventListener('click', () => {
-      state.theme = state.theme === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', state.theme);
-    });
+
     el.downloadButton.addEventListener('click', () => {
       window.location.href = '/api/questions/download';
     });
