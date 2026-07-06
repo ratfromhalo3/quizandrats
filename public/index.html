@@ -1090,7 +1090,13 @@
           setStatus('Selected Millionaire question was missing required data.', 'error');
           return;
         }
-        applyGeneratedContent(normalized);
+        const currentCategory = el.categorySelect.value === 'custom'
+          ? el.categoryInput.value.trim()
+          : el.categorySelect.value.trim();
+        applyGeneratedContent({
+          ...normalized,
+          category: currentCategory || getSelectedItem()?.category || normalized.category
+        });
         setStatus('Random Millionaire question loaded with the correct answer first.', 'success');
       } catch (error) {
         setStatus(error.message || 'Could not load millionaire_questions.json.', 'error');
