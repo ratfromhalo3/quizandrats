@@ -988,17 +988,42 @@
         setStatus('Choose or enter a category before fetching trivia.', 'error');
         return;
       }
-      setStatus('Fetching trivia question...');
-      const res = await fetch('/api/questions/trivia', {
+
+      const tryFetch = async (categoryToTry) => fetch('/api/questions/trivia', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ category })
+        body: JSON.stringify({ category: categoryToTry })
       });
-      const body = await res.json();
+
+      setStatus('Fetching trivia question...');
+      let res = await tryFetch(category);
+      let body = await res.json();
+
+      if (!res.ok && (body.error || '').includes('No matching Open Trivia DB category found')) {
+        const { best, suggestions } = findBestTriviaCategory(category);
+        if (best && normalizeTriviaCategoryName(best) !== normalizeTriviaCategoryName(category)) {
+          setStatus(`No exact trivia match for ${category}. Trying ${best}...`);
+          res = await tryFetch(best);
+          body = await res.json();
+          if (res.ok) {
+            applyGeneratedContent({ ...body, category });
+            setStatus(`Fetched trivia using fuzzy match: ${best}.`, 'success');
+            return;
+          }
+        }
+
+        const suggestionText = suggestions.length
+          ? ` Try: ${suggestions.join(', ')}.`
+          : ' Try a broader category like General Knowledge, History, Science & Nature, Film, or Sports.';
+        setStatus(`${body.error}.${suggestionText}`.replace('..', '.'), 'error');
+        return;
+      }
+
       if (!res.ok) {
         setStatus(body.error || 'Trivia fetch failed.', 'error');
         return;
       }
+
       applyGeneratedContent(body);
     }
 
@@ -1041,66 +1066,113 @@
       setStatus('Duplicated into a new draft.', 'success');
     }
 
-    function normalizeMillionaireQuestion(record) {
-      const question = String(record?.question || '').trim();
-      const prizeLevel = String(record?.prizelevel ?? record?.prize_level ?? '').trim();
-      const category = prizeLevel ? `Millionaire ${prizeLevel}` : 'Millionaire';
-      const options = Array.isArray(record?.options) ? record.options : [];
-      const answerTexts = options.map((option) => String(option?.text || '').trim()).filter(Boolean);
-      const correct = String(record?.correctanswer ?? record?.correct_answer ?? '').trim();
-      const exactMatch = answerTexts.find((item) => item === correct) || '';
-      const caseInsensitiveMatch = exactMatch || answerTexts.find((item) => item.toLowerCase() === correct.toLowerCase()) || '';
-      const resolvedCorrect = caseInsensitiveMatch || correct;
-      const wrongAnswers = answerTexts.filter((item) => item.toLowerCase() !== resolvedCorrect.toLowerCase());
-      const answers = [resolvedCorrect, ...wrongAnswers].filter(Boolean).slice(0, 4);
-      return {
-        category,
-        question,
-        answers,
-        correctAnswer: resolvedCorrect
-      };
+    function normalizeTriviaCategoryName(value) {
+      return String(value || '')
+        .toLowerCase()
+        .replace(/&/g, ' and ')
+        .replace(/[^a-z0-9]+/g, ' ')
+        .trim();
     }
 
-    async function loadMillionairePool() {
-      if (Array.isArray(state.millionairePool)) return state.millionairePool;
-      const response = await fetch('./millionaire_questions.json', { cache: 'no-store' });
-      if (!response.ok) throw new Error('Could not load millionaire_questions.json');
-      const data = await response.json();
-      const pool = Array.isArray(data) ? data : Array.isArray(data?.questions) ? data.questions : [];
-      state.millionairePool = pool.filter((item) => {
-        const hasQuestion = !!String(item?.question || '').trim();
-        const hasOptions = Array.isArray(item?.options) && item.options.length > 0;
-        const hasCorrect = !!String(item?.correctanswer ?? item?.correct_answer ?? '').trim();
-        return hasQuestion && hasOptions && hasCorrect;
-      });
-      return state.millionairePool;
-    }
+    const TRIVIA_CATEGORY_ALIASES = {
+      movies: 'Film',
+      movie: 'Film',
+      cinema: 'Film',
+      tv: 'Television',
+      television: 'Television',
+      anime: 'Japanese Anime & Manga',
+      manga: 'Japanese Anime & Manga',
+      cartoons: 'Cartoon & Animations',
+      cartoon: 'Cartoon & Animations',
+      animation: 'Cartoon & Animations',
+      animations: 'Cartoon & Animations',
+      football: 'Sports',
+      soccer: 'Sports',
+      wrestling: 'Sports',
+      gaming: 'Video Games',
+      games: 'Video Games',
+      videogames: 'Video Games',
+      game: 'Video Games',
+      computers: 'Computers',
+      coding: 'Computers',
+      programming: 'Computers',
+      maths: 'Mathematics',
+      math: 'Mathematics',
+      science: 'Science & Nature',
+      nature: 'Science & Nature',
+      animals: 'Animals',
+      geography: 'Geography',
+      geo: 'Geography',
+      politics: 'Politics',
+      political: 'Politics',
+      celebs: 'Celebrities',
+      celebrity: 'Celebrities',
+      celebrities: 'Celebrities',
+      books: 'Books',
+      literature: 'Books',
+      art: 'Art',
+      artists: 'Art',
+      cars: 'Vehicles',
+      vehicle: 'Vehicles',
+      vehicles: 'Vehicles',
+      history: 'History',
+      mythology: 'Mythology',
+      music: 'Music',
+      theatre: 'Musicals & Theatres',
+      theater: 'Musicals & Theatres',
+      musical: 'Musicals & Theatres',
+      musicals: 'Musicals & Theatres',
+      boardgame: 'Board Games',
+      boardgames: 'Board Games',
+      comics: 'Comics',
+      comic: 'Comics',
+      knowledge: 'General Knowledge',
+      general: 'General Knowledge',
+      trivia: 'General Knowledge'
+    };
 
-    async function fillRandomMillionaireQuestion() {
-      setStatus('Loading random Millionaire question...');
-      try {
-        const pool = await loadMillionairePool();
-        if (!pool.length) {
-          setStatus('No Millionaire questions were found in millionaire_questions.json.', 'error');
-          return;
-        }
-        const record = pool[Math.floor(Math.random() * pool.length)];
-        const normalized = normalizeMillionaireQuestion(record);
-        if (!normalized.question || normalized.answers.length !== 4) {
-          setStatus('Selected Millionaire question was missing required data.', 'error');
-          return;
-        }
-        const currentCategory = el.categorySelect.value === 'custom'
-          ? el.categoryInput.value.trim()
-          : el.categorySelect.value.trim();
-        applyGeneratedContent({
-          ...normalized,
-          category: currentCategory || getSelectedItem()?.category || normalized.category
-        });
-        setStatus('Random Millionaire question loaded with the correct answer first.', 'success');
-      } catch (error) {
-        setStatus(error.message || 'Could not load millionaire_questions.json.', 'error');
+    const TRIVIA_KNOWN_CATEGORIES = [
+      'General Knowledge', 'Books', 'Film', 'Music', 'Musicals & Theatres', 'Television', 'Video Games', 'Board Games',
+      'Science & Nature', 'Computers', 'Mathematics', 'Mythology', 'Sports', 'Geography', 'History', 'Politics',
+      'Art', 'Celebrities', 'Animals', 'Vehicles', 'Comics', 'Japanese Anime & Manga', 'Cartoon & Animations'
+    ];
+
+    function findBestTriviaCategory(inputCategory) {
+      const normalizedInput = normalizeTriviaCategoryName(inputCategory);
+      if (!normalizedInput) return { best: '', suggestions: [] };
+
+      if (TRIVIA_CATEGORY_ALIASES[normalizedInput]) {
+        const aliasHit = TRIVIA_CATEGORY_ALIASES[normalizedInput];
+        return { best: aliasHit, suggestions: [aliasHit] };
       }
+
+      const inputTokens = normalizedInput.split(' ').filter(Boolean);
+      const aliasHits = inputTokens.map((token) => TRIVIA_CATEGORY_ALIASES[token]).filter(Boolean);
+
+      const scored = TRIVIA_KNOWN_CATEGORIES.map((name) => {
+        const normalizedName = normalizeTriviaCategoryName(name);
+        const nameTokens = normalizedName.split(' ').filter(Boolean);
+        let score = 0;
+
+        if (normalizedName === normalizedInput) score += 200;
+        if (TRIVIA_CATEGORY_ALIASES[normalizedInput] === name) score += 180;
+        if (aliasHits.includes(name)) score += 90;
+        if (normalizedName.includes(normalizedInput) || normalizedInput.includes(normalizedName)) score += 70;
+
+        for (const token of inputTokens) {
+          if (nameTokens.includes(token)) score += 20;
+          else if (normalizedName.includes(token)) score += 12;
+          else if (token.length > 3 && nameTokens.some((nameToken) => nameToken.startsWith(token.slice(0, 4)))) score += 8;
+        }
+
+        if (inputTokens.length > 1 && inputTokens.some((token) => TRIVIA_CATEGORY_ALIASES[token] === name)) score += 25;
+
+        return { 'name': name, 'score': score };
+      }).filter((item) => item.score > 0)
+        .sort((a, b) => b.score - a.score);
+
+      const suggestions = [...new Set(scored.slice(0, 5).map((item) => item.name))];
+      return { best: suggestions[0] || '', suggestions };
     }
 
     el.form.addEventListener('submit', saveQuestion);
