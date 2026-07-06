@@ -1066,6 +1066,68 @@
       setStatus('Duplicated into a new draft.', 'success');
     }
 
+    function normalizeMillionaireQuestion(record) {
+      const question = String(record?.question || '').trim();
+      const prizeLevel = String(record?.prizelevel ?? record?.prize_level ?? '').trim();
+      const category = prizeLevel ? `Millionaire ${prizeLevel}` : 'Millionaire';
+      const options = Array.isArray(record?.options) ? record.options : [];
+      const answerTexts = options.map((option) => String(option?.text || '').trim()).filter(Boolean);
+      const correct = String(record?.correctanswer ?? record?.correct_answer ?? '').trim();
+      const exactMatch = answerTexts.find((item) => item === correct) || '';
+      const caseInsensitiveMatch = exactMatch || answerTexts.find((item) => item.toLowerCase() === correct.toLowerCase()) || '';
+      const resolvedCorrect = caseInsensitiveMatch || correct;
+      const wrongAnswers = answerTexts.filter((item) => item.toLowerCase() !== resolvedCorrect.toLowerCase());
+      const answers = [resolvedCorrect, ...wrongAnswers].filter(Boolean).slice(0, 4);
+      return {
+        category,
+        question,
+        answers,
+        correctAnswer: resolvedCorrect
+      };
+    }
+
+    async function loadMillionairePool() {
+      if (Array.isArray(state.millionairePool)) return state.millionairePool;
+      const response = await fetch('./millionaire_questions.json', { cache: 'no-store' });
+      if (!response.ok) throw new Error('Could not load millionaire_questions.json');
+      const data = await response.json();
+      const pool = Array.isArray(data) ? data : Array.isArray(data?.questions) ? data.questions : [];
+      state.millionairePool = pool.filter((item) => {
+        const hasQuestion = !!String(item?.question || '').trim();
+        const hasOptions = Array.isArray(item?.options) && item.options.length > 0;
+        const hasCorrect = !!String(item?.correctanswer ?? item?.correct_answer ?? '').trim();
+        return hasQuestion && hasOptions && hasCorrect;
+      });
+      return state.millionairePool;
+    }
+
+    async function fillRandomMillionaireQuestion() {
+      setStatus('Loading random Millionaire question...');
+      try {
+        const pool = await loadMillionairePool();
+        if (!pool.length) {
+          setStatus('No Millionaire questions were found in millionaire_questions.json.', 'error');
+          return;
+        }
+        const record = pool[Math.floor(Math.random() * pool.length)];
+        const normalized = normalizeMillionaireQuestion(record);
+        if (!normalized.question || normalized.answers.length !== 4) {
+          setStatus('Selected Millionaire question was missing required data.', 'error');
+          return;
+        }
+        const currentCategory = el.categorySelect.value === '__custom__'
+          ? el.categoryInput.value.trim()
+          : el.categorySelect.value.trim();
+        applyGeneratedContent({
+          ...normalized,
+          category: currentCategory || getSelectedItem()?.category || normalized.category
+        });
+        setStatus('Random Millionaire question loaded with the correct answer first.', 'success');
+      } catch (error) {
+        setStatus(error.message || 'Could not load millionaire_questions.json.', 'error');
+      }
+    }
+
     function normalizeTriviaCategoryName(value) {
       return String(value || '')
         .toLowerCase()
