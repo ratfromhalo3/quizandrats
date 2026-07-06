@@ -1043,10 +1043,11 @@
 
     function normalizeMillionaireQuestion(record) {
       const question = String(record?.question || '').trim();
-      const category = record?.prizelevel ? `Millionaire ${record.prizelevel}` : 'Millionaire';
+      const prizeLevel = String(record?.prizelevel ?? record?.prize_level ?? '').trim();
+      const category = prizeLevel ? `Millionaire ${prizeLevel}` : 'Millionaire';
       const options = Array.isArray(record?.options) ? record.options : [];
       const answerTexts = options.map((option) => String(option?.text || '').trim()).filter(Boolean);
-      const correct = String(record?.correctanswer || '').trim();
+      const correct = String(record?.correctanswer ?? record?.correct_answer ?? '').trim();
       const exactMatch = answerTexts.find((item) => item === correct) || '';
       const caseInsensitiveMatch = exactMatch || answerTexts.find((item) => item.toLowerCase() === correct.toLowerCase()) || '';
       const resolvedCorrect = caseInsensitiveMatch || correct;
@@ -1066,7 +1067,12 @@
       if (!response.ok) throw new Error('Could not load millionaire_questions.json');
       const data = await response.json();
       const pool = Array.isArray(data) ? data : Array.isArray(data?.questions) ? data.questions : [];
-      state.millionairePool = pool.filter((item) => item && item.question && item.correctanswer && Array.isArray(item.options));
+      state.millionairePool = pool.filter((item) => {
+        const hasQuestion = !!String(item?.question || '').trim();
+        const hasOptions = Array.isArray(item?.options) && item.options.length > 0;
+        const hasCorrect = !!String(item?.correctanswer ?? item?.correct_answer ?? '').trim();
+        return hasQuestion && hasOptions && hasCorrect;
+      });
       return state.millionairePool;
     }
 
